@@ -1,21 +1,20 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { API_BASE_URL } from "../../services/api.js";
 import styles from "./CategorySection.module.css";
 
 function CategorySkeleton() {
   return (
-    <div
-      className={styles.categoryCard}
-      aria-hidden="true"
-      style={{
-        background: "#1e293b",
-        borderRadius: 16,
-        minHeight: 200,
-        minWidth: 160,
-        flexShrink: 0,
-        animation: "pulse 1.5s ease-in-out infinite",
-      }}
-    />
+    <div className={styles.categoryCard} aria-hidden="true">
+      <div className={styles.imageWrapper}>
+        <div className={styles.skeletonImage} />
+      </div>
+      <div className={styles.categoryInfo}>
+        <div className={styles.skeletonTitle} />
+        <div className={styles.skeletonCount} />
+      </div>
+    </div>
   );
 }
 
@@ -40,7 +39,7 @@ function CategorySection() {
     setLoading(true);
     setError("");
 
-    fetch("/api/categories")
+    fetch(`${API_BASE_URL}/categories`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();

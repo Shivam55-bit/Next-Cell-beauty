@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { API_BASE_URL } from "../../services/api.js";
 import styles from "./HeroSlider.module.css";
 
 function HeroSlider() {
@@ -13,7 +14,7 @@ function HeroSlider() {
     let mounted = true;
     setLoading(true);
 
-    fetch("/api/banners")
+    fetch(`${API_BASE_URL}/banners`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();

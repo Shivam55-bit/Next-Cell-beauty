@@ -6,6 +6,7 @@ import {
   Star,
   BadgeCheck,
 } from "lucide-react";
+import { API_BASE_URL } from "../../services/api.js";
 import styles from "./TestimonialSection.module.css";
 
 function getCardsPerView() {
@@ -94,7 +95,7 @@ function TestimonialSection() {
     let mounted = true;
     setLoading(true);
 
-    fetch("/api/reviews")
+    fetch(`${API_BASE_URL}/reviews`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();

@@ -1,11 +1,9 @@
+import { API_BASE_URL } from '../services/api.js'
+
 const STORAGE_KEY = 'naflin_cms_pages_v1'
-const DEFAULT_API_BASE = '/api'
 
 const getCmsApiBase = () => {
-  if (typeof window === 'undefined') return DEFAULT_API_BASE
-  const envBase = import.meta.env.VITE_API_BASE_URL || ''
-  if (envBase) return envBase.replace(/\/$/, '')
-  return DEFAULT_API_BASE
+  return API_BASE_URL.replace(/\/$/, '')
 }
 
 const readJson = async (resource) => {
