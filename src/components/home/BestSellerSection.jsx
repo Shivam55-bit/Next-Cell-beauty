@@ -34,6 +34,7 @@ function ProductSkeleton() {
 }
 
 function BestSellerSection() {
+  const { t } = useLanguage();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
