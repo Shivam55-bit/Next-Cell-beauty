@@ -222,6 +222,7 @@ function MyOrdersPage() {
                           <p className="text-xl font-bold text-[#0B1F3A]">{formatCurrency(order.grandTotal || 0)}</p>
                           <div className="flex flex-wrap gap-2">
                             <Link to={`/account/orders/${order.id || order._id}`} className="rounded-full border border-[#E2E8F0] px-4 py-2 text-sm font-semibold text-[#0B1F3A] transition hover:bg-[#F8FAFC]">View details</Link>
+                            <Link to={`/return-request/${order.id || order._id}`} className="rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-800 transition hover:bg-amber-100">Return / Refund</Link>
                             {order.courierName && order.trackingNumber ? (
                               <a href={order.trackingUrl || '#'} target="_blank" rel="noreferrer" className="inline-flex items-center rounded-full bg-[#0B1F3A] px-4 py-2 text-sm font-semibold text-white">
                                 <Truck className="mr-2 inline h-4 w-4" />Track

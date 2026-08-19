@@ -52,10 +52,25 @@ function ReturnRefundRequestPage() {
     }
 
     try {
-      await submitReturnRequest({ orderId, items: selectedItems, reason, comments })
+      const selectedItemNames = (order?.items || [])
+        .filter((item, idx) => selectedItems.includes(`${item.product || item.productName || 'item'}-${idx}`))
+        .map((item) => item.productName || item.name || 'Product')
+        .join(', ')
+
+      await submitReturnRequest({
+        orderId: order?.orderNumber || orderId,
+        customerName: order?.customerName || order?.shippingAddress?.fullName || 'Customer',
+        customerEmail: order?.customerEmail || order?.email || '',
+        productName: selectedItemNames || 'Selected items',
+        reason,
+        comments,
+        refundAmount: Number(order?.grandTotal || order?.totalAmount || order?.total || 0),
+        amount: Number(order?.grandTotal || order?.totalAmount || order?.total || 0),
+        items: selectedItems
+      })
       setSubmitted(true)
     } catch (err) {
-      setSubmitError(err?.message || 'Return service is currently unavailable. Please contact support instead.')
+      setSubmitError(err?.response?.data?.message || err?.message || 'Return service is currently unavailable. Please contact support instead.')
     }
   }
 

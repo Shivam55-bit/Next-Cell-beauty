@@ -33,13 +33,13 @@ export const getReturns = async (req, res, next) => {
 export const createReturn = async (req, res, next) => {
   try {
     const body = req.body;
-    if (!body.orderId || !body.customerName) {
-      return sendError(res, "Order ID and customer name are required.", 400);
+    if (!body.orderId) {
+      return sendError(res, "Order ID is required.", 400);
     }
 
     const ret = await prisma.return.create({
       orderId: body.orderId,
-      customerName: body.customerName,
+      customerName: body.customerName || "Customer",
       customerEmail: body.customerEmail || "",
       productName: body.productName || "Product",
       reason: body.reason || "Return requested",
@@ -48,7 +48,7 @@ export const createReturn = async (req, res, next) => {
       refundStatus: body.refundStatus || "Pending",
       refundAmount: Number(body.refundAmount || body.amount || 0),
       amount: Number(body.refundAmount || body.amount || 0),
-      adminNote: body.adminNote || ""
+      adminNote: body.comments || body.adminNote || ""
     });
 
     return sendSuccess(res, "Return request created", transformReturn(ret), 201);

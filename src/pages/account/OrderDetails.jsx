@@ -146,6 +146,9 @@ function OrderDetailsPage() {
 
               <div className="flex flex-wrap gap-3">
                 {['pending', 'confirmed', 'processing'].includes((order.orderStatus || '').toLowerCase()) ? <button type="button" onClick={handleCancel} disabled={busy} className="rounded-full border border-rose-200 px-4 py-2 text-sm font-semibold text-rose-600 dark:border-rose-600 dark:bg-slate-900 dark:text-rose-200 dark:hover:bg-rose-500/10">{busy ? 'Cancelling...' : 'Cancel order'}</button> : null}
+                <Link to={`/return-request/${orderId || order._id || order.id}`} className="rounded-full border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-800 transition hover:bg-amber-100 dark:border-amber-600 dark:bg-amber-950/40 dark:text-amber-200">
+                  Request Return / Refund
+                </Link>
                 {order.trackingUrl ? <a href={order.trackingUrl} target="_blank" rel="noreferrer" className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white"><Truck className="mr-2 inline h-4 w-4" />Track shipment</a> : null}
                 <Link to="/shop" className="rounded-full bg-brand-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-600 dark:bg-brand-500 dark:hover:bg-brand-600">Continue shopping</Link>
               </div>
