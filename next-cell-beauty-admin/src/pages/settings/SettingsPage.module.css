@@ -1,0 +1,174 @@
+.container {
+  display: grid;
+  gap: 20px;
+}
+
+.headerBar {
+  background: #fff;
+  padding: 20px 24px;
+  border-radius: var(--admin-radius-md);
+  border: 1px solid var(--admin-border);
+}
+
+.headerBar h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  color: var(--admin-heading);
+}
+
+.headerBar p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 13px;
+}
+
+.settingsLayout {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.3fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.tabList {
+  background: #fff;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: fit-content;
+}
+
+.tabBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--admin-text);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.tabBtn:hover {
+  background: #fafcfb;
+  color: var(--admin-heading);
+}
+
+.activeTab {
+  background: #fafcfb !important;
+  border-color: var(--admin-border) !important;
+  color: var(--admin-green) !important;
+}
+
+.tabContent {
+  background: #fff;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  padding: 24px;
+}
+
+.sectionGroup h3 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: var(--admin-heading);
+  border-bottom: 1px solid var(--admin-border);
+  padding-bottom: 10px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.fullWidth {
+  grid-column: span 2;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formGroup label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--admin-heading);
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  padding: 9px 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  background: #fff;
+}
+
+.toggleList {
+  display: grid;
+  gap: 14px;
+}
+
+.toggleItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  background: #fafcfb;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.toggleItem strong {
+  display: block;
+  font-size: 13px;
+  color: var(--admin-heading);
+}
+
+.toggleItem span {
+  font-size: 11px;
+  color: var(--admin-muted);
+}
+
+.toggleItem input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--admin-green);
+}
+
+.formFooter {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--admin-border);
+}
+
+.saveBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 8px;
+  background: var(--admin-green);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@media (max-width: 850px) {
+  .settingsLayout {
+    grid-template-columns: 1fr;
+  }
+}

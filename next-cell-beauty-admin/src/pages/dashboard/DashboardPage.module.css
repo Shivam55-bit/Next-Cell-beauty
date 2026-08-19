@@ -1,0 +1,187 @@
+.page {
+  display: grid;
+  gap: 22px;
+}
+
+.welcomeCard {
+  min-height: 145px;
+  padding: 28px 30px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 18px;
+  color: #fff;
+  background:
+    radial-gradient(
+      circle at 90% 20%,
+      rgba(255, 255, 255, 0.11),
+      transparent 27%
+    ),
+    linear-gradient(
+      125deg,
+      var(--admin-primary),
+      var(--admin-green-dark)
+    );
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+}
+
+.welcomeCard span {
+  margin-bottom: 6px;
+  color: #9fd6b9;
+  display: block;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.welcomeCard h2 {
+  margin: 0 0 7px;
+  color: #fff;
+  font-family: "Playfair Display", serif;
+  font-size: 29px;
+}
+
+.welcomeCard p {
+  max-width: 610px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.welcomeCard button {
+  min-height: 44px;
+  padding: 9px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9px;
+  color: var(--admin-primary);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.statCard {
+  min-width: 0;
+  min-height: 125px;
+  padding: 20px;
+  border: 1px solid var(--admin-border);
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 8px 25px rgba(6, 25, 54, 0.045);
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+}
+
+.statIcon {
+  width: 43px;
+  height: 43px;
+  flex: 0 0 43px;
+  border-radius: 11px;
+  color: var(--admin-green);
+  background: rgba(0, 99, 63, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statCard > div:last-child {
+  min-width: 0;
+  display: grid;
+}
+
+.statCard span {
+  margin-bottom: 5px;
+  color: var(--admin-muted);
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statCard strong {
+  margin-bottom: 5px;
+  color: var(--admin-heading);
+  font-size: 22px;
+}
+
+.statCard small {
+  color: var(--admin-muted);
+  font-size: 8px;
+}
+
+.placeholderGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(310px, 0.6fr);
+  gap: 17px;
+}
+
+.placeholderGrid > article {
+  min-width: 0;
+  padding: 23px;
+  border: 1px solid var(--admin-border);
+  border-radius: 15px;
+  background: #fff;
+}
+
+.placeholderGrid article > span {
+  color: var(--admin-green);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.placeholderGrid h3 {
+  margin: 5px 0 20px;
+  font-size: 16px;
+}
+
+.emptyChart,
+.emptyOrders {
+  min-height: 240px;
+  border: 1px dashed var(--admin-border);
+  border-radius: 12px;
+  color: var(--admin-muted);
+  background: #fafcfb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  text-align: center;
+}
+
+@media (max-width: 1150px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .placeholderGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .welcomeCard {
+    padding: 23px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .welcomeCard h2 {
+    font-size: 25px;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}

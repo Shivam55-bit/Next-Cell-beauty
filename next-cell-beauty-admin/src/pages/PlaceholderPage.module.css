@@ -1,0 +1,38 @@
+.page {
+  padding: 26px;
+  color: #05141f;
+  background: #f7fafc;
+}
+
+.hero {
+  max-width: 780px;
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+}
+
+.hero p {
+  margin: 12px 0 0;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.contentCard {
+  padding: 24px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+  max-width: 880px;
+}
+
+.contentCard p {
+  margin: 0;
+  color: #334155;
+  line-height: 1.75;
+}

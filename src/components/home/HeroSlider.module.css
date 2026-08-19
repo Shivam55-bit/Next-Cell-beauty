@@ -1,0 +1,387 @@
+.heroSlider {
+  width: 100%;
+  height: clamp(520px, 42vw, 680px);
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), rgba(239, 233, 241, 0.95) 40%, #f8f1f6 100%);
+}
+
+.slidesWrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.slide {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(1.03);
+  transition:
+    opacity 0.8s ease,
+    visibility 0.8s ease,
+    transform 0.8s ease;
+}
+
+.activeSlide {
+  z-index: 2;
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+.backgroundImage {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+}
+
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.72) 28%, rgba(255, 255, 255, 0.18) 62%, rgba(255, 255, 255, 0.02) 88%);
+}
+
+.slideContainer {
+  height: 100%;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.slideContent {
+  width: min(560px, 46%);
+  padding-left: clamp(42px, 6vw, 112px);
+  animation: contentReveal 0.9s ease forwards;
+}
+
+.eyebrow {
+  margin-bottom: 16px;
+  color: #7b4b95;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.slideContent h1 {
+  margin-bottom: 20px;
+  color: #2c1d3d;
+  font-size: clamp(3.2rem, 5vw, 5.2rem);
+  font-weight: 800;
+  line-height: 0.96;
+}
+
+.slideContent h1 span {
+  margin-top: 10px;
+  color: #b35bc5;
+  display: block;
+}
+
+.description {
+  max-width: 490px;
+  margin-bottom: 30px;
+  color: #42385a;
+  font-size: 1.05rem;
+  line-height: 1.85;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 52px;
+  padding: 14px 30px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.primaryButton {
+  color: #ffffff;
+  background: linear-gradient(135deg, #8b4bca, #c54795);
+  box-shadow: 0 18px 32px rgba(197, 95, 170, 0.22);
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+}
+
+.secondaryButton {
+  color: #6a2f68;
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(106, 47, 104, 0.16);
+  backdrop-filter: blur(8px);
+}
+
+.secondaryButton:hover {
+  color: #ffffff;
+  background: linear-gradient(135deg, #9b42b4, #da4f92);
+}
+
+.arrowButton {
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  border: 0;
+  border-radius: 50%;
+  color: #4d2d5f;
+  background: rgba(255, 255, 255, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 18px 30px rgba(82, 47, 99, 0.12);
+  transform: translateY(-50%);
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.arrowButton:hover {
+  transform: translateY(-50%) scale(1.04);
+  color: #ffffff;
+  background: #ae4dbf;
+}
+
+.previousButton {
+  left: clamp(18px, 2vw, 48px);
+}
+
+.nextButton {
+  right: clamp(18px, 2vw, 48px);
+}
+
+.pagination {
+  position: absolute;
+  right: 0;
+  bottom: 26px;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.paginationDot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  transition: width 0.25s ease, background 0.25s ease;
+}
+
+.activeDot {
+  width: 32px;
+  background: #b35bc5;
+}
+
+@keyframes contentReveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1199px) {
+  .heroSlider {
+    height: 580px;
+  }
+
+  .slideContent {
+    width: 54%;
+    padding-left: 58px;
+  }
+
+  .slideContent h1 {
+    font-size: 4.2rem;
+  }
+}
+
+@media (max-width: 991px) {
+  .heroSlider {
+    height: 520px;
+  }
+
+  .slideContent {
+    width: 62%;
+    padding-left: 48px;
+  }
+
+  .slideContent h1 {
+    font-size: 3.6rem;
+  }
+
+  .description {
+    max-width: 400px;
+    font-size: 0.95rem;
+  }
+
+  .imageOverlay {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.88) 34%, rgba(255, 255, 255, 0.24) 70%, rgba(255, 255, 255, 0.02) 96%);
+  }
+}
+
+@media (max-width: 767px) {
+  .heroSlider {
+    height: 600px;
+  }
+
+  .backgroundImage {
+    height: 55%;
+    top: 0;
+    bottom: auto;
+    object-position: center top !important;
+  }
+
+  .imageOverlay {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0) 28%,
+        rgba(246, 248, 247, 0.92) 51%,
+        rgba(246, 248, 247, 1) 66%
+      );
+  }
+
+  .slideContainer {
+    align-items: flex-end;
+  }
+
+  .slideContent {
+    width: 100%;
+    padding: 0 22px 70px;
+    text-align: center;
+  }
+
+  .eyebrow {
+    margin-bottom: 8px;
+    font-size: 11px;
+  }
+
+  .slideContent h1 {
+    margin-bottom: 13px;
+    font-size: 43px;
+    line-height: 1;
+  }
+
+  .slideContent h1 span {
+    margin-top: 4px;
+  }
+
+  .description {
+    max-width: 510px;
+    margin: 0 auto 20px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .actions {
+    justify-content: center;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    min-height: 45px;
+    padding: 11px 18px;
+    font-size: 11px;
+  }
+
+  .arrowButton {
+    width: 39px;
+    height: 39px;
+    top: 28%;
+  }
+
+  .previousButton {
+    left: 12px;
+  }
+
+  .nextButton {
+    right: 12px;
+  }
+
+  .pagination {
+    bottom: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroSlider {
+    height: 570px;
+  }
+
+  .backgroundImage {
+    height: 50%;
+  }
+
+  .slideContent {
+    padding-right: 14px;
+    padding-bottom: 65px;
+    padding-left: 14px;
+  }
+
+  .slideContent h1 {
+    font-size: 36px;
+  }
+
+  .description {
+    display: -webkit-box;
+    overflow: hidden;
+    line-clamp: 3;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    flex: 1;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .arrowButton {
+    width: 35px;
+    height: 35px;
+    top: 25%;
+  }
+}
+
+@media (max-width: 360px) {
+  .slideContent h1 {
+    font-size: 32px;
+  }
+
+  .description {
+    font-size: 12px;
+  }
+}

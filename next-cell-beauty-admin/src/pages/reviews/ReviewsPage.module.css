@@ -1,0 +1,67 @@
+.container {
+  display: grid;
+  gap: 20px;
+}
+
+.headerBar {
+  background: #fff;
+  padding: 20px 24px;
+  border-radius: var(--admin-radius-md);
+  border: 1px solid var(--admin-border);
+}
+
+.headerBar h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  color: var(--admin-heading);
+}
+
+.headerBar p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 13px;
+}
+
+.iconBtn {
+  border: 1px solid var(--admin-border);
+  background: #fff;
+  color: var(--admin-heading);
+  padding: 6px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successIcon {
+  color: var(--admin-green);
+}
+
+.dangerIcon {
+  color: var(--admin-danger);
+}
+
+.reviewCard {
+  display: grid;
+  gap: 12px;
+}
+
+.approveBtn {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: var(--admin-green);
+  color: #fff;
+  font-weight: 700;
+}
+
+.rejectBtn {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: var(--admin-danger);
+  color: #fff;
+  font-weight: 700;
+}

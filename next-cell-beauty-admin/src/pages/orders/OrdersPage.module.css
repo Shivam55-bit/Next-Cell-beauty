@@ -1,0 +1,172 @@
+.container {
+  display: grid;
+  gap: 20px;
+}
+
+.headerBar {
+  background: #fff;
+  padding: 20px 24px;
+  border-radius: var(--admin-radius-md);
+  border: 1px solid var(--admin-border);
+}
+
+.headerBar h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  color: var(--admin-heading);
+}
+
+.headerBar p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 13px;
+}
+
+.viewBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--admin-heading);
+}
+
+.detailsBody {
+  display: grid;
+  gap: 20px;
+}
+
+.statusBox {
+  background: #fafcfb;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid var(--admin-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.statusSelect {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+}
+
+.updateBtn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--admin-green);
+  color: #fff;
+  font-weight: 700;
+}
+
+.noteInput {
+  padding: 8px 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  font-size: 12px;
+  outline: none;
+}
+
+.sectionCard {
+  background: #fff;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.sectionCard h4 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--admin-heading);
+  border-bottom: 1px solid var(--admin-border);
+  padding-bottom: 8px;
+}
+
+.sectionCard p {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: var(--admin-text);
+}
+
+.itemsList {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.itemRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #fafcfb;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.itemRow small {
+  display: block;
+  color: var(--admin-muted);
+  font-size: 11px;
+}
+
+.billSummary {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--admin-text);
+}
+
+.billSummary div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.finalTotal {
+  font-size: 15px;
+  color: var(--admin-green);
+  font-weight: 700;
+  padding-top: 6px;
+}
+
+.timeline {
+  display: grid;
+  gap: 14px;
+  position: relative;
+  padding-left: 12px;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.timelineIcon {
+  color: var(--admin-green);
+  padding-top: 2px;
+}
+
+.timelineItem strong {
+  font-size: 13px;
+  color: var(--admin-heading);
+}
+
+.timelineItem small {
+  display: block;
+  color: var(--admin-muted);
+  font-size: 11px;
+}
+
+.timelineItem p {
+  margin: 4px 0 0;
+  font-size: 12px;
+}

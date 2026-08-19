@@ -1,0 +1,150 @@
+.brandLogo {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logoImageWrapper {
+  width: 82px;
+  height: 72px;
+  flex: 0 0 82px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.logoImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  filter: none !important;
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.brandText strong {
+  color: #061936;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  white-space: nowrap;
+}
+
+.brandText > span {
+  margin-top: 7px;
+  color: #00633f;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 7px;
+  white-space: nowrap;
+}
+
+.footer {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .footer .brandText strong {
+    color: #ffffff;
+  }
+
+  .footer .brandText > span {
+    color: #9ed0b7;
+  }
+
+.compact .logoImageWrapper {
+  width: 66px;
+  height: 58px;
+  flex-basis: 66px;
+}
+
+.compact .brandText strong {
+  font-size: 18px;
+}
+
+.compact .brandText > span {
+  font-size: 8px;
+  letter-spacing: 5px;
+}
+
+.iconOnly {
+  gap: 0;
+}
+
+.iconOnly .logoImageWrapper {
+  width: 72px;
+  height: 64px;
+  flex-basis: 72px;
+}
+
+@media (max-width: 991px) {
+  .brandLogo {
+    gap: 10px;
+  }
+
+  .logoImageWrapper {
+    width: 62px;
+    height: 54px;
+    flex-basis: 62px;
+  }
+
+  .brandText strong {
+    font-size: 17px;
+    letter-spacing: 2px;
+  }
+
+  .brandText > span {
+    margin-top: 5px;
+    font-size: 8px;
+    letter-spacing: 5px;
+  }
+}
+
+@media (max-width: 520px) {
+  .logoImageWrapper {
+    width: 52px;
+    height: 46px;
+    flex-basis: 52px;
+  }
+
+  .brandText strong {
+    font-size: 15px;
+    letter-spacing: 1.5px;
+  }
+
+  .brandText > span {
+    font-size: 7px;
+    letter-spacing: 4px;
+  }
+}
+
+@media (max-width: 370px) {
+  .logoImageWrapper {
+    width: 46px;
+    height: 41px;
+    flex-basis: 46px;
+  }
+
+  .brandText strong {
+    font-size: 13px;
+  }
+
+  .brandText > span {
+    font-size: 6px;
+    letter-spacing: 3px;
+  }
+}

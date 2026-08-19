@@ -1,0 +1,69 @@
+.chartContainer {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.svg {
+  width: 100%;
+  height: 80%;
+  overflow: visible;
+}
+
+.labelsRow {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--admin-border);
+}
+
+.labelItem {
+  font-size: 10px;
+  color: var(--admin-muted);
+  font-weight: 600;
+  text-align: center;
+}
+
+.barGrid {
+  height: 85%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.barCol {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.bar {
+  width: 70%;
+  max-width: 28px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+}
+
+.barCol .labelItem {
+  position: absolute;
+  bottom: -22px;
+  white-space: nowrap;
+}
+
+.emptyChart {
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--admin-muted);
+  font-size: 13px;
+}

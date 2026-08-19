@@ -1,0 +1,49 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.success {
+  color: var(--admin-green);
+  background: rgba(0, 99, 63, 0.1);
+}
+.success .dot {
+  background: var(--admin-green);
+}
+
+.warning {
+  color: #b45309;
+  background: #fef3c7;
+}
+.warning .dot {
+  background: #d97706;
+}
+
+.danger {
+  color: var(--admin-danger);
+  background: rgba(200, 59, 59, 0.1);
+}
+.danger .dot {
+  background: var(--admin-danger);
+}
+
+.default {
+  color: var(--admin-text);
+  background: var(--admin-bg);
+}
+.default .dot {
+  background: var(--admin-muted);
+}

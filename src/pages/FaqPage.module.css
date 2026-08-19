@@ -1,0 +1,155 @@
+.page {
+  min-height: 100vh;
+  padding: 7rem 1rem 5rem;
+  background: linear-gradient(180deg, #f5f8f7 0%, #ffffff 100%);
+}
+
+.heroCard {
+  border: 1px solid #dce5e0;
+  background: linear-gradient(135deg, #061936, #00633f);
+  color: #fff;
+  border-radius: 30px;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.heroCopy h1 {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  margin: 0.3rem 0 0.5rem;
+}
+
+.heroCopy p {
+  margin: 0;
+  color: rgba(255,255,255,0.85);
+  max-width: 640px;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: rgba(255,255,255,0.8);
+  font-weight: 700;
+}
+
+.heroBadge {
+  padding: 0.9rem 1rem;
+  background: rgba(255,255,255,0.16);
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.heroBadge a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid #dce5e0;
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.95rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.searchWrap input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #071833;
+  font-size: 1rem;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.tabButton {
+  border: 1px solid #dce5e0;
+  background: #fff;
+  color: #596473;
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tabButtonActive {
+  background: #061936;
+  color: #fff;
+  border-color: #061936;
+}
+
+.list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.item {
+  border: 1px solid #dce5e0;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.itemButton {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.1rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.itemQuestion {
+  color: #071833;
+  font-weight: 700;
+}
+
+.chevron {
+  color: #596473;
+  transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.answer {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0 1.1rem 1rem;
+  color: #596473;
+  line-height: 1.7;
+}
+
+.emptyState {
+  padding: 2rem;
+  background: #fff;
+  border: 1px dashed #dce5e0;
+  border-radius: 20px;
+  color: #596473;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .heroCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

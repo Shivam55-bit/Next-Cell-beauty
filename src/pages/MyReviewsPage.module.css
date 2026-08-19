@@ -1,0 +1,204 @@
+.page {
+  min-height: 100vh;
+  padding: 7rem 1rem 5rem;
+  background: linear-gradient(180deg, #f5f8f7 0%, #ffffff 100%);
+}
+
+.heroCard {
+  background: linear-gradient(135deg, #061936, #00633f);
+  color: #fff;
+  border-radius: 28px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.heroCard h1 {
+  margin: 0.3rem 0 0.4rem;
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+}
+
+.heroCard p {
+  margin: 0;
+  color: rgba(255,255,255,0.85);
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: rgba(255,255,255,0.8);
+  font-weight: 700;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.tabButton {
+  border: 1px solid #dce5e0;
+  background: #fff;
+  color: #596473;
+  border-radius: 999px;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tabButtonActive {
+  background: #061936;
+  color: #fff;
+  border-color: #061936;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 1rem;
+}
+
+.leftColumn {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.card,
+.formCard,
+.publishedCard {
+  background: #fff;
+  border: 1px solid #dce5e0;
+  border-radius: 20px;
+  padding: 1rem;
+  box-shadow: 0 10px 24px rgba(6, 25, 54, 0.05);
+}
+
+.card {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+}
+
+.productImage {
+  width: 74px;
+  height: 74px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.cardContent h3,
+.publishedCard h3 {
+  color: #071833;
+  margin: 0 0 0.3rem;
+}
+
+.cardContent p,
+.publishedCard p,
+.metaRow {
+  color: #596473;
+  margin: 0.2rem 0;
+}
+
+.formCard {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.formCard h2 {
+  color: #071833;
+  margin: 0;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+  color: #071833;
+  font-weight: 600;
+}
+
+.field input,
+.field textarea {
+  border: 1px solid #dce5e0;
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+  background: #f5f8f7;
+  color: #071833;
+}
+
+.ratingRow {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.starButton {
+  border: 0;
+  background: transparent;
+  color: #dce5e0;
+  cursor: pointer;
+}
+
+.starButtonActive {
+  color: #00633f;
+}
+
+.uploadBox {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px dashed #dce5e0;
+  border-radius: 16px;
+  padding: 0.9rem 1rem;
+  color: #596473;
+  background: #f5f8f7;
+}
+
+.primaryButton {
+  display: inline-flex;
+  justify-content: center;
+  min-height: 46px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #061936, #00633f);
+  color: #fff;
+  padding: 0.8rem 1rem;
+  border: 0;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.successState,
+.errorState {
+  border-radius: 16px;
+  padding: 0.9rem 1rem;
+}
+
+.successState {
+  color: #004f33;
+  background: #eef8f2;
+  border: 1px solid #cfead6;
+}
+
+.errorState {
+  color: #b42318;
+  background: #fef3f2;
+  border: 1px solid #f3b3ab;
+}
+
+.publishedList {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.6rem;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

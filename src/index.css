@@ -1,0 +1,299 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --color-primary: #061936;
+  --color-secondary: #00633f;
+  --color-secondary-dark: #004f33;
+
+  --color-white: #ffffff;
+  --color-black: #111111;
+
+  --color-bg: #ffffff;
+  --color-bg-soft: #f6f8f7;
+  --color-bg-muted: #eef3f0;
+
+  --color-heading: #071833;
+  --color-text: #4f5968;
+  --color-border: #dde4e0;
+
+  --color-success: #087443;
+  --color-danger: #c93636;
+  --color-warning: #d79a25;
+
+  --font-heading: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Inter", Arial, sans-serif;
+
+  --container-width: 1440px;
+  --container-padding: 32px;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 4px 14px rgba(4, 29, 38, 0.06);
+  --shadow-md: 0 10px 30px rgba(4, 29, 38, 0.1);
+
+  --transition: 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  color: var(--color-heading);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.12;
+}
+
+p {
+  margin-top: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+input,
+textarea,
+select,
+button {
+  outline: none;
+}
+
+.container {
+  width: min(
+    calc(100% - (var(--container-padding) * 2)),
+    var(--container-width)
+  );
+  margin-inline: auto;
+}
+
+.section {
+  padding: 76px 0;
+}
+
+.section-sm {
+  padding: 48px 0;
+}
+
+.section-heading {
+  margin-bottom: 30px;
+}
+
+.section-heading h2 {
+  margin-bottom: 8px;
+  font-size: clamp(32px, 4vw, 48px);
+}
+
+.section-heading p {
+  max-width: 650px;
+  margin-bottom: 0;
+  font-size: 15px;
+}
+
+.btn {
+  min-height: 48px;
+  padding: 12px 24px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-primary {
+  color: var(--color-white);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-outline {
+  color: var(--color-primary);
+  background: transparent;
+  border-color: var(--color-primary);
+}
+
+.btn-outline:hover {
+  color: var(--color-white);
+  background: var(--color-primary);
+}
+
+.card {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.hide-mobile {
+  display: block;
+}
+
+.show-mobile {
+  display: none;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+@media (max-width: 1199px) {
+  :root {
+    --container-padding: 24px;
+  }
+
+  .section {
+    padding: 64px 0;
+  }
+}
+
+@media (max-width: 991px) {
+  :root {
+    --container-padding: 20px;
+  }
+
+  body {
+    font-size: 15px;
+  }
+
+  .section {
+    padding: 56px 0;
+  }
+
+  .section-sm {
+    padding: 40px 0;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --container-padding: 16px;
+  }
+
+  .section {
+    padding: 42px 0;
+  }
+
+  .section-sm {
+    padding: 32px 0;
+  }
+
+  .section-heading {
+    margin-bottom: 22px;
+  }
+
+  .section-heading h2 {
+    font-size: 32px;
+  }
+
+  .btn {
+    min-height: 46px;
+    padding: 11px 18px;
+  }
+
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .show-mobile {
+    display: block !important;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --container-padding: 14px;
+  }
+
+  body {
+    font-size: 14px;
+  }
+
+  .section {
+    padding: 36px 0;
+  }
+
+  .section-heading h2 {
+    font-size: 29px;
+  }
+}

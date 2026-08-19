@@ -1,0 +1,332 @@
+.sidebar {
+  width: 270px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1100;
+  overflow: hidden;
+  color: #fff;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(0, 99, 63, 0.22),
+      transparent 30%
+    ),
+    var(--admin-primary);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.28s ease, transform 0.28s ease;
+}
+
+.collapsed {
+  width: 82px;
+}
+
+.sidebarHeader {
+  min-height: 86px;
+  padding: 17px 17px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.logoMark {
+  width: 47px;
+  height: 43px;
+  flex: 0 0 47px;
+  overflow: hidden;
+  color: #fff;
+  background:
+    linear-gradient(
+      90deg,
+      #17375f 0%,
+      #17375f 50%,
+      #00714a 50%,
+      #00714a 100%
+    );
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: flex-end;
+  padding-bottom: 7px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.logoMark span:first-child {
+  text-align: right;
+}
+
+.logoMark span:last-child {
+  text-align: left;
+}
+
+.brandText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.brandText strong {
+  color: #fff;
+  font-size: 15px;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+.brandText span {
+  margin-top: 6px;
+  color: #98d3b5;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 2.6px;
+  white-space: nowrap;
+}
+
+.storeCard {
+  min-height: 64px;
+  margin: 15px 13px 9px;
+  padding: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.055);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.storeIcon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 9px;
+  color: #a4d7bd;
+  background: rgba(0, 99, 63, 0.23);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.storeCard > div:last-child {
+  display: grid;
+  gap: 3px;
+}
+
+.storeCard span {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 8px;
+}
+
+.storeCard strong {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+}
+
+.storeCard i,
+.collapsedStatus i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #39d98a;
+  box-shadow: 0 0 0 4px rgba(57, 217, 138, 0.1);
+}
+
+.collapsed .storeCard {
+  justify-content: center;
+}
+
+.collapsedStatus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navigation {
+  flex: 1;
+  padding: 5px 11px 20px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.navigation::-webkit-scrollbar {
+  width: 4px;
+}
+
+.navigation::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.menuGroup {
+  margin-top: 16px;
+}
+
+.groupLabel {
+  margin: 0 10px 8px;
+  color: rgba(255, 255, 255, 0.34);
+  display: block;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.menuItems {
+  display: grid;
+  gap: 4px;
+}
+
+.menuItem {
+  min-height: 43px;
+  padding: 9px 12px;
+  position: relative;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.64);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 10px;
+  font-weight: 600;
+  transition: 0.22s ease;
+}
+
+.menuItem svg {
+  flex: 0 0 auto;
+}
+
+.menuItem:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.activeItem {
+  color: #fff;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0, 99, 63, 0.75),
+      rgba(0, 99, 63, 0.25)
+    );
+}
+
+.activeItem::before {
+  content: "";
+  width: 3px;
+  height: 22px;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  border-radius: 0 4px 4px 0;
+  background: #7dd9ad;
+  transform: translateY(-50%);
+}
+
+.collapsed .menuItem {
+  justify-content: center;
+  padding: 9px;
+}
+
+.sidebarFooter {
+  padding: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.collapseButton {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.58);
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.collapseButton:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.mobileClose,
+.mobileOverlay {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sidebar,
+  .collapsed {
+    width: min(84vw, 290px);
+    transform: translateX(-100%);
+  }
+
+  .mobileOpen {
+    transform: translateX(0);
+  }
+
+  .mobileClose {
+    width: 36px;
+    height: 36px;
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobileOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1090;
+    background: rgba(4, 14, 30, 0.58);
+    opacity: 0;
+    visibility: hidden;
+    display: block;
+    transition: 0.25s ease;
+  }
+
+  .mobileOverlayVisible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .collapsed .brandText,
+  .collapsed .groupLabel,
+  .collapsed .menuItem span {
+    display: initial;
+  }
+
+  .collapsed .menuItem {
+    justify-content: flex-start;
+    padding: 9px 12px;
+  }
+
+  .collapsed .storeCard {
+    justify-content: flex-start;
+  }
+
+  .collapseButton {
+    display: none;
+  }
+}

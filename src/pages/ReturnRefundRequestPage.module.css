@@ -1,0 +1,179 @@
+.page {
+  min-height: 100vh;
+  padding: 7rem 1rem 5rem;
+  background: linear-gradient(180deg, #f5f8f7 0%, #ffffff 100%);
+}
+
+.heroCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, #061936, #00633f);
+  color: #fff;
+  border-radius: 28px;
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.heroCard h1 {
+  margin: 0.3rem 0 0.4rem;
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+}
+
+.heroCard p {
+  margin: 0;
+  color: rgba(255,255,255,0.85);
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: rgba(255,255,255,0.8);
+  font-weight: 700;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.16);
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #00633f;
+  font-weight: 600;
+  margin-bottom: 0.85rem;
+}
+
+.formCard,
+.loadingState,
+.errorState,
+.successState {
+  background: #fff;
+  border: 1px solid #dce5e0;
+  border-radius: 24px;
+  padding: 1.2rem;
+  box-shadow: 0 12px 30px rgba(6, 25, 54, 0.05);
+}
+
+.section {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.section h2 {
+  font-size: 1.1rem;
+  color: #071833;
+  margin: 0;
+}
+
+.itemList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px solid #dce5e0;
+  border-radius: 16px;
+  padding: 0.8rem 0.95rem;
+}
+
+.itemRowActive {
+  border-color: #cfead6;
+  background: #eef8f2;
+}
+
+.itemRow input {
+  width: 1rem;
+  height: 1rem;
+}
+
+.itemRow strong {
+  color: #071833;
+}
+
+.itemRow p,
+.emptyText,
+.uploadBox p,
+.checkboxRow span {
+  color: #596473;
+  margin: 0.2rem 0 0;
+}
+
+.select,
+textarea {
+  width: 100%;
+  border: 1px solid #dce5e0;
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  background: #f5f8f7;
+  color: #071833;
+}
+
+.uploadBox {
+  border: 1px dashed #dce5e0;
+  border-radius: 16px;
+  padding: 1rem;
+  color: #596473;
+  background: #f5f8f7;
+}
+
+.checkboxRow {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+}
+
+.checkboxRow input {
+  margin-top: 0.25rem;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0.8rem 1rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #061936, #00633f);
+  color: #fff;
+  font-weight: 700;
+  border: 0;
+  cursor: pointer;
+}
+
+.successState {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: #004f33;
+  background: #eef8f2;
+  border-color: #cfead6;
+}
+
+.errorState {
+  color: #b42318;
+  background: #fef3f2;
+  border-color: #f3b3ab;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 640px) {
+  .heroCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

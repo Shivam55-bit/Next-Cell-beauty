@@ -1,0 +1,159 @@
+.container {
+  display: grid;
+  gap: 20px;
+}
+
+.headerBar {
+  background: #fff;
+  padding: 20px 24px;
+  border-radius: var(--admin-radius-md);
+  border: 1px solid var(--admin-border);
+}
+
+.headerBar h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  color: var(--admin-heading);
+}
+
+.headerBar p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 13px;
+}
+
+.iconBtn {
+  border: 1px solid var(--admin-border);
+  background: #fff;
+  color: var(--admin-heading);
+  padding: 6px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dangerIcon {
+  color: var(--admin-danger);
+}
+
+.drawerBody {
+  display: grid;
+  gap: 18px;
+}
+
+.profileCard {
+  text-align: center;
+  padding: 20px;
+  background: #fafcfb;
+  border-radius: 12px;
+  border: 1px solid var(--admin-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.largeAvatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--admin-primary);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileCard h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--admin-heading);
+}
+
+.sectionCard {
+  background: #fff;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.sectionCard h4 {
+  margin: 0 0 4px;
+  color: var(--admin-heading);
+  border-bottom: 1px solid var(--admin-border);
+  padding-bottom: 6px;
+}
+
+.sectionCard p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--admin-text);
+}
+
+.addrBox {
+  padding: 8px 10px;
+  background: #fafcfb;
+  border-radius: 6px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formGroup label {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.formGroup input {
+  padding: 9px 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+}
+
+.formFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--admin-border);
+}
+
+.cancelBtn {
+  padding: 8px 16px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 600;
+}
+
+.saveBtn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--admin-green);
+  color: #fff;
+  font-weight: 700;
+}
