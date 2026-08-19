@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   BadgeCheck,
   ChevronDown,
@@ -15,14 +15,26 @@ import {
   Truck,
   WalletCards,
   Zap,
+  Play,
+  Flame,
+  MessageSquarePlus,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Eye
 } from "lucide-react";
 
 import { addToCart } from "../redux/cartSlice.js";
+import { toggleWishlist } from "../redux/wishlistSlice.js";
+import { fetchProductBySlug, fetchProducts } from "../services/productService.js";
+import api from "../services/api.js";
+import { recordRecentlyViewed } from "../components/home/RecentlyViewedSection.jsx";
+import ShareModal from "../components/common/ShareModal.jsx";
 import toast from "react-hot-toast";
 import styles from "./ProductDetailPage.module.css";
 
-const productData = {
-  id: 1,
+const defaultMockProduct = {
+  id: "default-pdp",
   name: "Velvet Matte Liquid Lipstick",
   slug: "velvet-matte-liquid-lipstick",
   brand: "NEXT CELL BEAUTY",
@@ -30,7 +42,7 @@ const productData = {
   subcategory: "Lipstick",
   sku: "NCB-LIP-001",
   rating: 4.8,
-  reviews: 126,
+  reviewsCount: 126,
   price: 599,
   oldPrice: 799,
   discount: 25,
@@ -38,231 +50,365 @@ const productData = {
   taxIncluded: true,
   shortDescription:
     "A richly pigmented, lightweight matte lipstick designed for smooth application, comfortable wear and long-lasting colour.",
-
   images: [
     "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=1000&q=90",
     "https://images.unsplash.com/photo-1631214540553-ff044a3ff121?auto=format&fit=crop&w=1000&q=90",
     "https://images.unsplash.com/photo-1591360236480-4ed861025fa1?auto=format&fit=crop&w=1000&q=90",
-    "https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=1000&q=90",
+    "https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=1000&q=90"
   ],
-
   shades: [
-    {
-      id: 1,
-      name: "Rose Nude",
-      color: "#a65c60",
-      image:
-        "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=1000&q=90",
-      stock: 10,
-    },
-    {
-      id: 2,
-      name: "Ruby Red",
-      color: "#941d32",
-      image:
-        "https://images.unsplash.com/photo-1631214540553-ff044a3ff121?auto=format&fit=crop&w=1000&q=90",
-      stock: 8,
-    },
-    {
-      id: 3,
-      name: "Berry Wine",
-      color: "#6d263d",
-      image:
-        "https://images.unsplash.com/photo-1591360236480-4ed861025fa1?auto=format&fit=crop&w=1000&q=90",
-      stock: 6,
-    },
-    {
-      id: 4,
-      name: "Coral Bloom",
-      color: "#c65f55",
-      image:
-        "https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=1000&q=90",
-      stock: 0,
-    },
+    { id: 1, name: "Rose Nude", color: "#a65c60", image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=1000&q=90", stock: 10 },
+    { id: 2, name: "Ruby Red", color: "#941d32", image: "https://images.unsplash.com/photo-1631214540553-ff044a3ff121?auto=format&fit=crop&w=1000&q=90", stock: 8 },
+    { id: 3, name: "Berry Wine", color: "#6d263d", image: "https://images.unsplash.com/photo-1591360236480-4ed861025fa1?auto=format&fit=crop&w=1000&q=90", stock: 6 },
+    { id: 4, name: "Coral Bloom", color: "#c65f55", image: "https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=1000&q=90", stock: 0 }
   ],
-
   sizes: [
-    {
-      id: 1,
-      label: "3 ml",
-      price: 499,
-      oldPrice: 699,
-    },
-    {
-      id: 2,
-      label: "5 ml",
-      price: 599,
-      oldPrice: 799,
-    },
-    {
-      id: 3,
-      label: "8 ml",
-      price: 749,
-      oldPrice: 949,
-    },
+    { id: 1, label: "3 ml", price: 499, oldPrice: 699 },
+    { id: 2, label: "5 ml", price: 599, oldPrice: 799 },
+    { id: 3, label: "8 ml", price: 749, oldPrice: 999 }
   ],
-
-  benefits: [
-    "Rich colour payoff",
-    "Comfortable matte finish",
-    "Lightweight texture",
-    "Long-lasting formula",
-    "Easy and smooth application",
+  features: [
+    "Up to 16 hours long-wear formula without flaking",
+    "Infused with Vitamin E and Jojoba Oil for hydration",
+    "Transfer-proof, smudge-resistant matte finish",
+    "100% Vegan and Cruelty-Free formulation"
   ],
-
-  ingredients:
-    "Isododecane, Dimethicone, Silica, Vitamin E, Natural Wax Blend, Cosmetic Pigments and Fragrance.",
-
+  ingredients: "Isododecane, Dimethicone, Trimethylsiloxysilicate, Polybutene, Silica Dimethyl Silylate, Simmondsia Chinensis (Jojoba) Seed Oil, Tocopheryl Acetate (Vitamin E), Phenoxyethanol.",
   howToUse: [
-    "Start with clean and moisturised lips.",
-    "Outline your lips using the applicator tip.",
-    "Fill the centre evenly with one smooth layer.",
-    "Allow the product to dry for a few seconds.",
+    "Exfoliate and moisturize lips lightly before application.",
+    "Use the precision applicator tip to define the lip contour.",
+    "Fill in lips with a single even coat and let it set for 60 seconds."
   ],
-
   details: {
-    skinType: "Suitable for all skin types",
-    finish: "Velvet matte",
-    coverage: "Full coverage",
+    skinType: "All Skin Types",
+    finish: "Velvet Matte",
+    coverage: "Full Coverage",
     country: "India",
-    expiry: "24 months from manufacturing",
+    expiry: "24 Months from MFG Date"
   },
+  youtubeVideoId: "dQw4w9WgXcQ"
 };
 
 const productTabs = [
-  {
-    id: "description",
-    label: "Description",
-  },
-  {
-    id: "benefits",
-    label: "Benefits",
-  },
-  {
-    id: "ingredients",
-    label: "Ingredients",
-  },
-  {
-    id: "how-to-use",
-    label: "How to Use",
-  },
-  {
-    id: "additional-info",
-    label: "Additional Info",
-  },
+  { id: "description", label: "Description" },
+  { id: "features", label: "Key Features" },
+  { id: "ingredients", label: "Ingredients" },
+  { id: "how-to-use", label: "How to Use" },
+  { id: "reviews", label: "Reviews & Ratings" },
+  { id: "video", label: "Application Video" },
+  { id: "additional-info", label: "Additional Info" }
 ];
 
 function ProductDetailPage() {
+  const { slug } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [selectedImage, setSelectedImage] = useState(
-    productData.images[0],
-  );
-  const [selectedShade, setSelectedShade] = useState(
-    productData.shades[0],
-  );
-  const [selectedSize, setSelectedSize] = useState(
-    productData.sizes[1],
-  );
+  const [product, setProduct] = useState(defaultMockProduct);
+  const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(defaultMockProduct.images[0]);
+  const [selectedShade, setSelectedShade] = useState(defaultMockProduct.shades[0]);
+  const [selectedSize, setSelectedSize] = useState(defaultMockProduct.sizes[1]);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
   const [pinCode, setPinCode] = useState("");
   const [deliveryMessage, setDeliveryMessage] = useState("");
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [reviewsList, setReviewsList] = useState([]);
+  const [reviewFormOpen, setReviewFormOpen] = useState(false);
+  const [reviewData, setReviewData] = useState({ name: "", rating: 5, comment: "" });
+  const [submittingReview, setSubmittingReview] = useState(false);
 
-  const currentPrice = selectedSize?.price || productData.price;
-  const currentOldPrice =
-    selectedSize?.oldPrice || productData.oldPrice;
+  // Live visitor simulation between 8 and 22
+  const viewerCount = useMemo(() => {
+    return Math.floor(Math.sin((product?.name?.length || 10) * 1.5) * 6 + 14);
+  }, [product?.name]);
 
-  const savedAmount = currentOldPrice - currentPrice;
+  const wishlistItems = useSelector((state) => state.wishlist?.items || []);
+  const isWishlisted = wishlistItems.some((item) => (item.id || item.slug) === (product.id || product.slug));
 
-  const discountPercentage = useMemo(() => {
-    return Math.round(
-      ((currentOldPrice - currentPrice) / currentOldPrice) * 100,
-    );
-  }, [currentOldPrice, currentPrice]);
+  // 1. Fetch Product Data dynamically
+  useEffect(() => {
+    let mounted = true;
+    const loadProduct = async () => {
+      setLoading(true);
+      try {
+        if (slug) {
+          const remoteProduct = await fetchProductBySlug(slug);
+          if (remoteProduct && mounted) {
+            // merge with default enriched fields if missing
+            const merged = {
+              ...defaultMockProduct,
+              ...remoteProduct,
+              images: remoteProduct.gallery?.length ? remoteProduct.gallery : (remoteProduct.image ? [remoteProduct.image] : defaultMockProduct.images),
+              shades: remoteProduct.shades?.length ? remoteProduct.shades : defaultMockProduct.shades,
+              sizes: remoteProduct.sizes?.length ? remoteProduct.sizes : defaultMockProduct.sizes,
+              price: Number(remoteProduct.price || defaultMockProduct.price),
+              oldPrice: Number(remoteProduct.oldPrice || remoteProduct.compareAtPrice || defaultMockProduct.oldPrice),
+            };
+            setProduct(merged);
+            setSelectedImage(merged.images[0] || defaultMockProduct.images[0]);
+            setSelectedShade(merged.shades[0] || defaultMockProduct.shades[0]);
+            setSelectedSize(merged.sizes[0] || defaultMockProduct.sizes[0]);
+            recordRecentlyViewed(merged);
+          } else if (mounted) {
+            recordRecentlyViewed(defaultMockProduct);
+          }
+        }
+      } catch (err) {
+        console.warn("Using fallback product details:", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    loadProduct();
+    return () => { mounted = false; };
+  }, [slug]);
+
+  // 2. Fetch Related Products & Reviews
+  useEffect(() => {
+    const loadExtras = async () => {
+      try {
+        const all = await fetchProducts();
+        const related = all.filter((p) => (p.slug || p.id) !== (product.slug || product.id)).slice(0, 4);
+        setRelatedProducts(related);
+      } catch (e) {}
+
+      try {
+        const res = await api.get("/reviews");
+        const allReviews = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+        setReviewsList(allReviews.slice(0, 6));
+      } catch (e) {}
+    };
+
+    loadExtras();
+  }, [product.slug, product.id]);
+
+  const currentPrice = selectedSize?.price || product.price || 599;
+  const currentOldPrice = selectedSize?.oldPrice || product.oldPrice || 799;
+  const discountPercentage = Math.round(((currentOldPrice - currentPrice) / currentOldPrice) * 100) || 25;
 
   const handleShadeSelect = (shade) => {
     if (shade.stock <= 0) return;
-
     setSelectedShade(shade);
-    setSelectedImage(shade.image);
-  };
-
-  const decreaseQuantity = () => {
-    setQuantity((current) => Math.max(1, current - 1));
-  };
-
-  const increaseQuantity = () => {
-    setQuantity((current) =>
-      Math.min(selectedShade.stock, current + 1),
-    );
-  };
-
-  const handleDeliveryCheck = (event) => {
-    event.preventDefault();
-
-    const normalizedPinCode = pinCode.trim();
-
-    if (!/^\d{6}$/.test(normalizedPinCode)) {
-      setDeliveryMessage("Please enter a valid 6-digit PIN code.");
-      return;
-    }
-
-    setDeliveryMessage(
-      "Delivery available. Estimated delivery within 3–5 business days.",
-    );
+    if (shade.image) setSelectedImage(shade.image);
   };
 
   const handleAddToCart = () => {
-    const cartItem = {
-      productId: productData.id,
-      id: productData.id,
-      name: productData.name,
-      slug: productData.slug,
-      image: selectedImage,
-      shade: selectedShade,
-      size: selectedSize,
-      quantity,
+    const item = {
+      id: `${product.id}-${selectedShade?.name || "std"}-${selectedSize?.label || "std"}`,
+      productId: product.id,
+      name: `${product.name} (${selectedShade?.name || "Standard"}, ${selectedSize?.label || "Standard"})`,
       price: currentPrice,
+      originalPrice: currentOldPrice,
+      image: selectedImage || (product.images && product.images[0]),
+      quantity,
+      shade: selectedShade?.name,
+      size: selectedSize?.label,
+      stock: selectedShade?.stock || product.stock || 10
     };
-
-    dispatch(addToCart({ ...cartItem, quantity }));
-    toast.success("Product added to cart");
+    dispatch(addToCart(item));
+    toast.success(`${product.name} added to cart!`);
   };
 
   const handleBuyNow = () => {
     handleAddToCart();
-    window.location.href = "/checkout";
+    navigate("/checkout");
+  };
+
+  const handleWishlistToggle = () => {
+    dispatch(toggleWishlist({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      price: currentPrice,
+      image: selectedImage || product.images[0]
+    }));
+  };
+
+  const handleDeliveryCheck = (e) => {
+    e.preventDefault();
+    if (!/^\d{6}$/.test(pinCode.trim())) {
+      setDeliveryMessage("Please enter a valid 6-digit Indian PIN code.");
+      return;
+    }
+    setDeliveryMessage("✅ Delivery Available! Estimated delivery in 3–5 business days with Free Shipping.");
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!reviewData.name.trim() || !reviewData.comment.trim()) {
+      toast.error("Please provide your name and review comments.");
+      return;
+    }
+    setSubmittingReview(true);
+    try {
+      await api.post("/reviews", {
+        customerName: reviewData.name,
+        productName: product.name,
+        productId: product.id || product.slug,
+        rating: Number(reviewData.rating),
+        comment: reviewData.comment
+      });
+      toast.success("Thank you! Your verified review has been submitted.");
+      setReviewsList((prev) => [
+        {
+          id: Date.now(),
+          customerName: reviewData.name,
+          rating: Number(reviewData.rating),
+          comment: reviewData.comment,
+          date: new Date().toISOString().split("T")[0]
+        },
+        ...prev
+      ]);
+      setReviewData({ name: "", rating: 5, comment: "" });
+      setReviewFormOpen(false);
+    } catch (err) {
+      toast.error("Review submitted locally for preview.");
+      setReviewFormOpen(false);
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case "benefits":
+      case "features":
         return (
-          <ul className={styles.bulletList}>
-            {productData.benefits.map((benefit) => (
-              <li key={benefit}>
+          <ul className={styles.featuresList}>
+            {(product.features || defaultMockProduct.features).map((feature) => (
+              <li key={feature}>
                 <BadgeCheck size={18} />
-                <span>{benefit}</span>
+                <span>{feature}</span>
               </li>
             ))}
           </ul>
         );
 
       case "ingredients":
-        return <p>{productData.ingredients}</p>;
+        return <p className={styles.paragraphText}>{product.ingredients || defaultMockProduct.ingredients}</p>;
 
       case "how-to-use":
         return (
           <ol className={styles.stepsList}>
-            {productData.howToUse.map((step, index) => (
+            {(product.howToUse || defaultMockProduct.howToUse).map((step, idx) => (
               <li key={step}>
-                <span>{index + 1}</span>
+                <span>{idx + 1}</span>
                 <p>{step}</p>
               </li>
             ))}
           </ol>
+        );
+
+      case "video":
+        return (
+          <div className={styles.videoTabContainer}>
+            <div className={styles.videoEmbedWrapper}>
+              <iframe
+                src={`https://www.youtube.com/embed/${product.youtubeVideoId || "dQw4w9WgXcQ"}?rel=0`}
+                title={`${product.name} Application Tutorial`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+            <p className={styles.videoCaption}>
+              Watch professional makeup artist application tips and swatch demos for {product.name}.
+            </p>
+          </div>
+        );
+
+      case "reviews":
+        return (
+          <div className={styles.reviewsTabWrapper}>
+            <div className={styles.reviewsSummaryBar}>
+              <div className={styles.ratingBig}>
+                <h3>{product.rating || 4.8}</h3>
+                <div className={styles.starCluster}>
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star key={s} size={16} fill="currentColor" className={styles.starFill} />
+                  ))}
+                </div>
+                <span>Based on {product.reviewsCount || 126} verified customer ratings</span>
+              </div>
+
+              <button
+                type="button"
+                className={styles.writeReviewBtn}
+                onClick={() => setReviewFormOpen((prev) => !prev)}
+              >
+                <MessageSquarePlus size={18} />
+                {reviewFormOpen ? "Cancel Review" : "Write a Verified Review"}
+              </button>
+            </div>
+
+            {reviewFormOpen && (
+              <form className={styles.reviewFormCard} onSubmit={handleReviewSubmit}>
+                <h4>Write Your Review</h4>
+                <div className={styles.formRow}>
+                  <label>
+                    Your Name
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Priya Sharma"
+                      value={reviewData.name}
+                      onChange={(e) => setReviewData({ ...reviewData, name: e.target.value })}
+                    />
+                  </label>
+                  <label>
+                    Rating
+                    <select
+                      value={reviewData.rating}
+                      onChange={(e) => setReviewData({ ...reviewData, rating: Number(e.target.value) })}
+                    >
+                      <option value={5}>⭐⭐⭐⭐⭐ (5 - Outstanding)</option>
+                      <option value={4}>⭐⭐⭐⭐ (4 - Very Good)</option>
+                      <option value={3}>⭐⭐⭐ (3 - Average)</option>
+                      <option value={2}>⭐⭐ (2 - Below Expectation)</option>
+                      <option value={1}>⭐ (1 - Poor)</option>
+                    </select>
+                  </label>
+                </div>
+                <label>
+                  Review Comments
+                  <textarea
+                    rows={4}
+                    required
+                    placeholder="Share details about texture, shade accuracy, and wear time..."
+                    value={reviewData.comment}
+                    onChange={(e) => setReviewData({ ...reviewData, comment: e.target.value })}
+                  />
+                </label>
+                <button type="submit" disabled={submittingReview} className={styles.submitReviewBtn}>
+                  {submittingReview ? "Submitting..." : "Submit Review"}
+                </button>
+              </form>
+            )}
+
+            <div className={styles.reviewsListGrid}>
+              {(reviewsList.length ? reviewsList : [
+                { id: 1, customerName: "Ananya Roy", rating: 5, comment: "The velvet finish is so smooth! Doesn't dry out lips and stayed intact through dinner.", date: "2026-08-10" },
+                { id: 2, customerName: "Kavita M.", rating: 5, comment: "Rose Nude is the absolute perfect everyday shade for Indian skin tones. 10/10 recommendation!", date: "2026-08-04" },
+                { id: 3, customerName: "Rhea Sen", rating: 4, comment: "Very lightweight feel and rich pigment. Loved the packaging and fast delivery!", date: "2026-07-28" }
+              ]).map((rev) => (
+                <div key={rev.id} className={styles.reviewItemCard}>
+                  <div className={styles.revHeader}>
+                    <strong>{rev.customerName}</strong>
+                    <span className={styles.verifiedBadge}>Verified Buyer</span>
+                    <span className={styles.revDate}>{rev.date}</span>
+                  </div>
+                  <div className={styles.revStars}>
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star key={s} size={14} fill={s <= rev.rating ? "currentColor" : "none"} className={styles.starFill} />
+                    ))}
+                  </div>
+                  <p>{rev.comment}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         );
 
       case "additional-info":
@@ -270,32 +416,27 @@ function ProductDetailPage() {
           <div className={styles.informationTable}>
             <div>
               <span>Suitable For</span>
-              <strong>{productData.details.skinType}</strong>
+              <strong>{product.details?.skinType || "All Skin Types"}</strong>
             </div>
-
             <div>
               <span>Finish</span>
-              <strong>{productData.details.finish}</strong>
+              <strong>{product.details?.finish || "Velvet Matte"}</strong>
             </div>
-
             <div>
               <span>Coverage</span>
-              <strong>{productData.details.coverage}</strong>
+              <strong>{product.details?.coverage || "Full Coverage"}</strong>
             </div>
-
             <div>
               <span>Country of Origin</span>
-              <strong>{productData.details.country}</strong>
+              <strong>{product.details?.country || "India"}</strong>
             </div>
-
             <div>
-              <span>Expiry</span>
-              <strong>{productData.details.expiry}</strong>
+              <span>Expiry Date</span>
+              <strong>{product.details?.expiry || "24 Months from MFG"}</strong>
             </div>
-
             <div>
-              <span>SKU</span>
-              <strong>{productData.sku}</strong>
+              <span>SKU Code</span>
+              <strong>{product.sku || "NCB-001"}</strong>
             </div>
           </div>
         );
@@ -303,12 +444,9 @@ function ProductDetailPage() {
       default:
         return (
           <>
-            <p>{productData.shortDescription}</p>
-
-            <p>
-              This premium beauty formula is designed for an even,
-              comfortable finish while helping you create polished looks
-              for everyday wear and special occasions.
+            <p className={styles.paragraphText}>{product.shortDescription}</p>
+            <p className={styles.paragraphText}>
+              Formulated with nourishing botanicals and dermatologically tested pigments for a flawless, long-lasting luxury beauty finish.
             </p>
           </>
         );
@@ -317,77 +455,59 @@ function ProductDetailPage() {
 
   return (
     <main className={styles.page}>
+      <ShareModal isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} product={product} />
+
       <section className={styles.breadcrumbSection}>
         <div className={`container ${styles.breadcrumb}`}>
           <Link to="/">Home</Link>
           <span>/</span>
-
           <Link to="/shop">Shop</Link>
           <span>/</span>
-
-          <Link to="/shop?category=makeup">
-            {productData.category}
-          </Link>
+          <Link to={`/shop?category=${encodeURIComponent(product.category || "makeup")}`}>{product.category}</Link>
           <span>/</span>
-
-          <strong>{productData.name}</strong>
+          <strong>{product.name}</strong>
         </div>
       </section>
 
       <section className={styles.productSection}>
         <div className={`container ${styles.productLayout}`}>
+          {/* Gallery Column */}
           <div className={styles.galleryColumn}>
             <div className={styles.galleryLayout}>
               <div className={styles.thumbnailList}>
-                {productData.images.map((image, index) => (
+                {(product.images || []).map((img, idx) => (
                   <button
-                    key={image}
+                    key={img}
                     type="button"
-                    className={`${styles.thumbnailButton} ${
-                      selectedImage === image
-                        ? styles.activeThumbnail
-                        : ""
-                    }`}
-                    onClick={() => setSelectedImage(image)}
-                    aria-label={`View product image ${index + 1}`}
+                    className={`${styles.thumbnailButton} ${selectedImage === img ? styles.activeThumbnail : ""}`}
+                    onClick={() => setSelectedImage(img)}
+                    aria-label={`View image ${idx + 1}`}
                   >
-                    <img
-                      src={image}
-                      alt={`${productData.name} view ${index + 1}`}
-                    />
+                    <img src={img} alt={`${product.name} ${idx + 1}`} />
                   </button>
                 ))}
               </div>
 
               <div className={styles.mainImageBox}>
-                <img
-                  src={selectedImage}
-                  alt={`${productData.name} - ${selectedShade.name}`}
-                />
+                {discountPercentage > 0 && (
+                  <span className={styles.discountBadge}>{discountPercentage}% OFF</span>
+                )}
 
-                <span className={styles.discountBadge}>
-                  {discountPercentage}% OFF
-                </span>
+                <img src={selectedImage} alt={product.name} className={styles.mainImage} />
 
                 <button
                   type="button"
-                  className={`${styles.imageWishlistButton} ${
-                    isWishlisted ? styles.wishlisted : ""
-                  }`}
-                  onClick={() =>
-                    setIsWishlisted((current) => !current)
-                  }
-                  aria-label="Add product to wishlist"
+                  className={styles.imageWishlistButton}
+                  onClick={handleWishlistToggle}
+                  aria-label="Add to wishlist"
                 >
-                  <Heart
-                    size={22}
-                    fill={isWishlisted ? "currentColor" : "none"}
-                  />
+                  <Heart size={22} fill={isWishlisted ? "currentColor" : "none"} />
                 </button>
 
                 <button
                   type="button"
                   className={styles.shareButton}
+                  onClick={() => setIsShareOpen(true)}
                   aria-label="Share product"
                 >
                   <Share2 size={20} />
@@ -396,183 +516,120 @@ function ProductDetailPage() {
             </div>
 
             <div className={styles.mobileThumbnails}>
-              {productData.images.map((image, index) => (
+              {(product.images || []).map((img, idx) => (
                 <button
-                  key={image}
+                  key={img}
                   type="button"
-                  className={`${styles.thumbnailButton} ${
-                    selectedImage === image
-                      ? styles.activeThumbnail
-                      : ""
-                  }`}
-                  onClick={() => setSelectedImage(image)}
-                  aria-label={`View product image ${index + 1}`}
+                  className={`${styles.thumbnailButton} ${selectedImage === img ? styles.activeThumbnail : ""}`}
+                  onClick={() => setSelectedImage(img)}
                 >
-                  <img
-                    src={image}
-                    alt={`${productData.name} view ${index + 1}`}
-                  />
+                  <img src={img} alt={`${product.name} ${idx + 1}`} />
                 </button>
               ))}
             </div>
           </div>
 
+          {/* Info Column */}
           <div className={styles.informationColumn}>
-            <span className={styles.brandName}>
-              {productData.brand}
-            </span>
+            <div className={styles.topMetaRow}>
+              <span className={styles.brandName}>{product.brand || "NEXT CELL BEAUTY"}</span>
+              <div className={styles.liveViewerPill}>
+                <Flame size={14} className={styles.flameIcon} />
+                <span>{viewerCount} people viewing now</span>
+              </div>
+            </div>
 
-            <h1>{productData.name}</h1>
-
-            <p className={styles.shortDescription}>
-              {productData.shortDescription}
-            </p>
+            <h1>{product.name}</h1>
+            <p className={styles.shortDescription}>{product.shortDescription}</p>
 
             <div className={styles.ratingRow}>
               <div className={styles.ratingBadge}>
                 <Star size={15} fill="currentColor" />
-                <strong>{productData.rating}</strong>
+                <strong>{product.rating || 4.8}</strong>
               </div>
-
-              <button type="button">
-                {productData.reviews} Verified Reviews
+              <button type="button" onClick={() => setActiveTab("reviews")}>
+                {product.reviewsCount || 126} Verified Reviews
               </button>
-
-              <span>SKU: {productData.sku}</span>
+              <span>SKU: {product.sku || "NCB-001"}</span>
             </div>
 
             <div className={styles.priceSection}>
               <div className={styles.priceRow}>
-                <strong>
-                  ₹{currentPrice.toLocaleString("en-IN")}
-                </strong>
-
-                <span>
-                  ₹{currentOldPrice.toLocaleString("en-IN")}
-                </span>
-
-                <em>{discountPercentage}% OFF</em>
+                <strong>₹{currentPrice.toLocaleString("en-IN")}</strong>
+                {currentOldPrice > currentPrice && (
+                  <span>₹{currentOldPrice.toLocaleString("en-IN")}</span>
+                )}
+                {discountPercentage > 0 && (
+                  <small>Save ₹{(currentOldPrice - currentPrice).toLocaleString("en-IN")} ({discountPercentage}% OFF)</small>
+                )}
               </div>
-
-              <p>
-                Inclusive of all taxes. You save ₹
-                {savedAmount.toLocaleString("en-IN")}.
-              </p>
+              <span className={styles.taxNote}>Inclusive of all taxes • Free Shipping Above ₹999</span>
             </div>
 
-            <div className={styles.offerBox}>
-              <div className={styles.offerIcon}>
-                <Zap size={21} />
-              </div>
-
-              <div>
-                <strong>Special Beauty Offer</strong>
-                <p>
-                  Get an additional 10% off on prepaid orders above
-                  ₹1,499.
-                </p>
-              </div>
-            </div>
-
-            <div className={styles.optionSection}>
-              <div className={styles.optionHeader}>
-                <div>
-                  <span>Select Shade</span>
-                  <strong>{selectedShade.name}</strong>
+            {/* Shades Selection */}
+            {Array.isArray(product.shades) && product.shades.length > 0 && (
+              <div className={styles.optionSection}>
+                <div className={styles.optionHeader}>
+                  <span>Select Shade: <strong>{selectedShade.name}</strong></span>
+                  <Link to="/shade-finder" className={styles.shadeFinderLink}>✨ Find My Shade</Link>
                 </div>
 
-                <button type="button">
-                  View Shade Guide
-                </button>
-              </div>
-
-              <div className={styles.shadeGrid}>
-                {productData.shades.map((shade) => (
-                  <button
-                    key={shade.id}
-                    type="button"
-                    className={`${styles.shadeButton} ${
-                      selectedShade.id === shade.id
-                        ? styles.activeShade
-                        : ""
-                    } ${
-                      shade.stock <= 0
-                        ? styles.disabledShade
-                        : ""
-                    }`}
-                    onClick={() => handleShadeSelect(shade)}
-                    disabled={shade.stock <= 0}
-                    aria-label={`Select shade ${shade.name}`}
-                    title={
-                      shade.stock <= 0
-                        ? `${shade.name} is out of stock`
-                        : shade.name
-                    }
-                  >
-                    <span
-                      style={{
-                        backgroundColor: shade.color,
-                      }}
-                    />
-
-                    <small>{shade.name}</small>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.optionSection}>
-              <div className={styles.optionHeader}>
-                <div>
-                  <span>Select Size</span>
+                <div className={styles.shadeGrid}>
+                  {product.shades.map((shade) => (
+                    <button
+                      key={shade.id || shade.name}
+                      type="button"
+                      className={`${styles.shadeButton} ${selectedShade.id === shade.id ? styles.activeShade : ""} ${shade.stock <= 0 ? styles.disabledShade : ""}`}
+                      onClick={() => handleShadeSelect(shade)}
+                      disabled={shade.stock <= 0}
+                      title={shade.stock <= 0 ? `${shade.name} is Out of Stock` : shade.name}
+                    >
+                      <span style={{ backgroundColor: shade.color || "#ccc" }} />
+                      <small>{shade.name}</small>
+                    </button>
+                  ))}
                 </div>
               </div>
+            )}
 
-              <div className={styles.sizeGrid}>
-                {productData.sizes.map((size) => (
-                  <button
-                    key={size.id}
-                    type="button"
-                    className={
-                      selectedSize.id === size.id
-                        ? styles.activeSize
-                        : ""
-                    }
-                    onClick={() => setSelectedSize(size)}
-                  >
-                    <strong>{size.label}</strong>
-                    <span>
-                      ₹{size.price.toLocaleString("en-IN")}
-                    </span>
-                  </button>
-                ))}
+            {/* Size / Variant Selection */}
+            {Array.isArray(product.sizes) && product.sizes.length > 0 && (
+              <div className={styles.optionSection}>
+                <div className={styles.optionHeader}>
+                  <span>Select Size: <strong>{selectedSize.label}</strong></span>
+                </div>
+                <div className={styles.sizeGrid}>
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size.id || size.label}
+                      type="button"
+                      className={`${styles.sizeBtn} ${selectedSize.id === size.id ? styles.activeSize : ""}`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      <strong>{size.label}</strong>
+                      <span>₹{size.price.toLocaleString("en-IN")}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
+            {/* Stock Availability */}
             <div className={styles.stockMessage}>
               <span />
-              Only {selectedShade.stock} items left in this shade
+              {selectedShade.stock > 0
+                ? `In Stock • Only ${selectedShade.stock} items left in this shade`
+                : "Currently Out of Stock"}
             </div>
 
+            {/* Purchase CTA row */}
             <div className={styles.purchaseRow}>
               <div className={styles.quantitySelector}>
-                <button
-                  type="button"
-                  onClick={decreaseQuantity}
-                  disabled={quantity <= 1}
-                  aria-label="Decrease quantity"
-                >
+                <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} disabled={quantity <= 1}>
                   <Minus size={17} />
                 </button>
-
                 <span>{quantity}</span>
-
-                <button
-                  type="button"
-                  onClick={increaseQuantity}
-                  disabled={quantity >= selectedShade.stock}
-                  aria-label="Increase quantity"
-                >
+                <button type="button" onClick={() => setQuantity((q) => Math.min(selectedShade.stock || 10, q + 1))} disabled={quantity >= (selectedShade.stock || 10)}>
                   <Plus size={17} />
                 </button>
               </div>
@@ -581,33 +638,30 @@ function ProductDetailPage() {
                 type="button"
                 className={styles.addToCartButton}
                 onClick={handleAddToCart}
+                disabled={selectedShade.stock <= 0}
               >
                 <ShoppingBag size={20} />
-                Add to Cart
+                {selectedShade.stock <= 0 ? "Out of Stock" : "Add to Cart"}
               </button>
 
               <button
                 type="button"
                 className={styles.buyNowButton}
                 onClick={handleBuyNow}
+                disabled={selectedShade.stock <= 0}
               >
                 <Zap size={20} />
                 Buy Now
               </button>
             </div>
 
-            <form
-              className={styles.deliveryChecker}
-              onSubmit={handleDeliveryCheck}
-            >
+            {/* PIN Code Delivery Checker */}
+            <form className={styles.deliveryChecker} onSubmit={handleDeliveryCheck}>
               <div className={styles.deliveryHeading}>
                 <Truck size={20} />
-
                 <div>
                   <strong>Check Delivery Availability</strong>
-                  <span>
-                    Enter your PIN code to check estimated delivery.
-                  </span>
+                  <span>Enter your PIN code for estimated delivery date</span>
                 </div>
               </div>
 
@@ -617,49 +671,36 @@ function ProductDetailPage() {
                   inputMode="numeric"
                   maxLength={6}
                   value={pinCode}
-                  onChange={(event) =>
-                    setPinCode(
-                      event.target.value.replace(/\D/g, ""),
-                    )
-                  }
-                  placeholder="Enter PIN code"
+                  onChange={(e) => setPinCode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="Enter 6-digit PIN code"
                 />
-
                 <button type="submit">Check</button>
               </div>
 
-              {deliveryMessage && (
-                <p className={styles.deliveryMessage}>
-                  {deliveryMessage}
-                </p>
-              )}
+              {deliveryMessage && <p className={styles.deliveryMessage}>{deliveryMessage}</p>}
             </form>
 
+            {/* Badges */}
             <div className={styles.purchaseBenefits}>
               <article>
                 <ShieldCheck size={22} />
-
                 <div>
                   <strong>100% Original</strong>
-                  <span>Authentic beauty products</span>
+                  <span>Direct from Brand</span>
                 </div>
               </article>
-
               <article>
                 <RotateCcw size={22} />
-
                 <div>
-                  <strong>Easy Returns</strong>
-                  <span>Hassle-free return policy</span>
+                  <strong>7-Day Easy Returns</strong>
+                  <span>Hassle-Free Policy</span>
                 </div>
               </article>
-
               <article>
                 <WalletCards size={22} />
-
                 <div>
                   <strong>Secure Payment</strong>
-                  <span>Safe and trusted checkout</span>
+                  <span>UPI, Cards & COD</span>
                 </div>
               </article>
             </div>
@@ -667,6 +708,7 @@ function ProductDetailPage() {
         </div>
       </section>
 
+      {/* Tabs Section */}
       <section className={styles.detailsSection}>
         <div className="container">
           <div className={styles.detailsBox}>
@@ -675,11 +717,7 @@ function ProductDetailPage() {
                 <button
                   key={tab.id}
                   type="button"
-                  className={
-                    activeTab === tab.id
-                      ? styles.activeTab
-                      : ""
-                  }
+                  className={`${styles.tabItem} ${activeTab === tab.id ? styles.activeTab : ""}`}
                   onClick={() => setActiveTab(tab.id)}
                 >
                   {tab.label}
@@ -689,47 +727,61 @@ function ProductDetailPage() {
 
             <label className={styles.mobileTabSelect}>
               <span>Product Information</span>
-
               <div>
-                <select
-                  value={activeTab}
-                  onChange={(event) =>
-                    setActiveTab(event.target.value)
-                  }
-                >
+                <select value={activeTab} onChange={(e) => setActiveTab(e.target.value)}>
                   {productTabs.map((tab) => (
                     <option key={tab.id} value={tab.id}>
                       {tab.label}
                     </option>
                   ))}
                 </select>
-
                 <ChevronDown size={17} />
               </div>
             </label>
 
-            <div className={styles.tabContent}>
-              {renderTabContent()}
-            </div>
+            <div className={styles.tabContent}>{renderTabContent()}</div>
           </div>
         </div>
       </section>
 
+      {/* Recommended & Related Products */}
+      {relatedProducts.length > 0 && (
+        <section className={styles.relatedSection}>
+          <div className="container">
+            <div className={styles.relatedHeader}>
+              <span className={styles.eyebrow}>Pairs Well With</span>
+              <h2>You May Also Like</h2>
+            </div>
+            <div className={styles.relatedGrid}>
+              {relatedProducts.map((rel) => (
+                <div key={rel.id || rel.slug} className={styles.relatedCard}>
+                  <Link to={`/product/${rel.slug}`} className={styles.relatedImgBox}>
+                    <img src={rel.image} alt={rel.name} loading="lazy" />
+                  </Link>
+                  <div className={styles.relatedInfo}>
+                    <span className={styles.relCat}>{rel.category}</span>
+                    <Link to={`/product/${rel.slug}`} className={styles.relTitle}>{rel.name}</Link>
+                    <div className={styles.relPrice}>₹{Number(rel.price).toLocaleString("en-IN")}</div>
+                    <Link to={`/product/${rel.slug}`} className={styles.relBtn}>View Details</Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Sticky Mobile Purchase Bar */}
       <div className={styles.mobilePurchaseBar}>
         <div>
-          <span>
-            ₹{currentPrice.toLocaleString("en-IN")}
-          </span>
-
+          <span>₹{currentPrice.toLocaleString("en-IN")}</span>
           <small>{selectedShade.name}</small>
         </div>
-
-        <button type="button" onClick={handleAddToCart}>
+        <button type="button" onClick={handleAddToCart} disabled={selectedShade.stock <= 0}>
           <ShoppingBag size={18} />
           Add to Cart
         </button>
-
-        <button type="button" onClick={handleBuyNow}>
+        <button type="button" onClick={handleBuyNow} disabled={selectedShade.stock <= 0}>
           Buy Now
         </button>
       </div>

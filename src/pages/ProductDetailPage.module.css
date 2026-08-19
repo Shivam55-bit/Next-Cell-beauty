@@ -1176,3 +1176,371 @@
     grid-template-columns: 100px 1fr;
   }
 }
+
+/* Extra PDP Enhancements */
+.topMetaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.liveViewerPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid #fecaca;
+}
+
+.flameIcon {
+  color: #ef4444;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.15); }
+}
+
+.videoTabContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.videoEmbedWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  background: #000000;
+}
+
+.videoEmbedWrapper iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.videoCaption {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  text-align: center;
+}
+
+.reviewsTabWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.reviewsSummaryBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.ratingBig h3 {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--color-primary-dark, #061936);
+  margin: 0;
+}
+
+.starCluster {
+  display: flex;
+  gap: 3px;
+  color: #f59e0b;
+  margin: 4px 0;
+}
+
+.starFill {
+  color: #f59e0b;
+}
+
+.ratingBig span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.writeReviewBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  border: 0;
+  background: var(--color-primary, #00633f);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reviewFormCard {
+  padding: 22px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reviewFormCard h4 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--color-primary-dark, #061936);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.reviewFormCard label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.reviewFormCard input,
+.reviewFormCard select,
+.reviewFormCard textarea {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+  outline: none;
+}
+
+.submitReviewBtn {
+  align-self: flex-start;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  border: 0;
+  background: var(--color-primary, #00633f);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.reviewsListGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.reviewItemCard {
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.revHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.revHeader strong {
+  font-size: 14px;
+  color: var(--color-primary-dark, #061936);
+}
+
+.verifiedBadge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #15803d;
+  background: #dcfce7;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.revDate {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-left: auto;
+}
+
+.revStars {
+  display: flex;
+  gap: 2px;
+  color: #f59e0b;
+  margin-bottom: 8px;
+}
+
+.reviewItemCard p {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.shadeFinderLink {
+  color: var(--color-primary, #00633f);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.shadeFinderLink:hover {
+  text-decoration: underline;
+}
+
+.taxNote {
+  font-size: 11px;
+  color: #64748b;
+  display: block;
+  margin-top: 4px;
+}
+
+/* Related Section */
+.relatedSection {
+  padding: 50px 0;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.relatedHeader {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  color: var(--color-primary, #00633f);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.relatedHeader h2 {
+  font-size: 28px;
+  color: var(--color-primary-dark, #061936);
+  font-family: var(--font-heading, serif);
+  margin-top: 4px;
+}
+
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.relatedCard {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+}
+
+.relatedCard:hover {
+  transform: translateY(-4px);
+}
+
+.relatedImgBox {
+  width: 100%;
+  aspect-ratio: 1 / 1.05;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.relatedImgBox img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.relatedInfo {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.relCat {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.relTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary-dark, #061936);
+  text-decoration: none;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.relPrice {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-primary, #00633f);
+  margin-top: auto;
+  margin-bottom: 10px;
+}
+
+.relBtn {
+  text-align: center;
+  padding: 8px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: var(--color-primary-dark, #061936);
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.relBtn:hover {
+  background: var(--color-primary, #00633f);
+  color: #ffffff;
+}
+
+@media (max-width: 991px) {
+  .relatedGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+  .relatedGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}

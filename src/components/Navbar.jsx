@@ -18,6 +18,7 @@ import styles from "./Navbar.module.css";
 import { getMyWishlist } from "../services/wishlistService.js";
 import { addToWishlist, removeFromWishlist } from "../redux/wishlistSlice.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useTranslation, setLanguage } from "../utils/translations.js";
 
 const categories = [
   { label: "Skincare", path: "/shop?category=skincare" },
@@ -37,6 +38,8 @@ const categories = [
 function Navbar() {
   const dispatch = useDispatch();
   const { isAuthenticated, user, logout } = useAuth();
+  const { t, currentLang, setLang } = useTranslation();
+  const [lang, setLocalLang] = useState(currentLang);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
@@ -123,6 +126,19 @@ function Navbar() {
             <span className={styles.topBarRight}>
               <Gift size={15} />
               Exclusive Offers on Premium Beauty
+              <button
+                type="button"
+                className={styles.langSwitchBtn}
+                onClick={() => {
+                  const next = lang === "en" ? "hi" : "en";
+                  setLang(next);
+                  setLocalLang(next);
+                  window.location.reload();
+                }}
+                title="Switch Language / भाषा बदलें"
+              >
+                🌐 {lang === "en" ? "हिंदी" : "English"}
+              </button>
             </span>
           </div>
         </div>
