@@ -1,6 +1,13 @@
 .pageSpacing {
-  padding-top: 7rem;
-  padding-bottom: 4rem;
+  padding-top: 3.5rem;
+  padding-bottom: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .pageSpacing {
+    padding-top: 6rem;
+    padding-bottom: 4rem;
+  }
 }
 
 .pageWrapper {
@@ -11,16 +18,29 @@
 }
 
 .roundedCard {
-  border-radius: 2.5rem;
+  border-radius: 1.5rem;
   border: 1px solid #e2e8f0;
   background: #ffffff;
   box-shadow: 0 22px 80px rgba(15, 23, 42, 0.08);
 }
 
+@media (min-width: 768px) {
+  .roundedCard {
+    border-radius: 2.5rem;
+  }
+}
+
 .heroCard {
   display: grid;
-  gap: 1.5rem;
-  padding: 2.5rem;
+  gap: 1.25rem;
+  padding: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .heroCard {
+    gap: 1.5rem;
+    padding: 2.5rem;
+  }
 }
 
 .gridGap8 {

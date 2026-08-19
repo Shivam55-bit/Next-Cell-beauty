@@ -320,31 +320,45 @@
 
 @media (max-width: 1199px) {
   .section {
-    padding: 76px 0;
+    padding: 70px 0;
+  }
+
+  .productGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 991px) {
+  .section {
+    padding: 56px 0;
   }
 
   .productGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
+    gap: 16px;
   }
 
-  .imageArea {
-    aspect-ratio: 1.15 / 1;
+  .sectionHeader h2 {
+    font-size: clamp(32px, 4.5vw, 46px);
   }
 }
 
 @media (max-width: 767px) {
   .section {
-    padding: 56px 0;
+    padding: 44px 0;
   }
 
   .sectionHeader {
-    margin-bottom: 28px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
     align-items: flex-start;
+    gap: 10px;
   }
 
   .sectionHeader h2 {
-    font-size: 38px;
+    font-size: 28px;
   }
 
   .sectionHeader p {
@@ -352,40 +366,41 @@
   }
 
   .viewAllButton {
-    min-height: 43px;
-    padding: 10px 14px;
-    font-size: 11px;
+    min-height: 40px;
+    padding: 8px 14px;
+    font-size: 12px;
   }
 
   .productGrid {
-    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
   }
 
   .productCard {
-    border-radius: 14px;
+    border-radius: 12px;
   }
 
   .imageArea {
-    aspect-ratio: 1 / 1.03;
+    aspect-ratio: 1 / 1.05;
   }
 
   .badges {
-    top: 9px;
-    left: 9px;
-    gap: 5px;
+    top: 8px;
+    left: 8px;
+    gap: 4px;
   }
 
   .featureBadge,
   .discountBadge {
-    padding: 5px 7px;
+    padding: 4px 6px;
     font-size: 8px;
   }
 
   .wishlistButton {
-    width: 35px;
-    height: 35px;
-    top: 9px;
-    right: 9px;
+    width: 34px;
+    height: 34px;
+    top: 8px;
+    right: 8px;
   }
 
   .quickCartButton {
@@ -393,27 +408,27 @@
   }
 
   .productContent {
-    padding: 14px 12px 13px;
+    padding: 12px 10px 14px;
   }
 
   .productName {
-    min-height: 42px;
-    margin-bottom: 8px;
-    font-size: 13px;
-    line-height: 1.5;
+    min-height: 38px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    line-height: 1.4;
   }
 
   .ratingRow {
-    margin-bottom: 9px;
-    gap: 5px;
+    margin-bottom: 8px;
+    gap: 4px;
   }
 
   .reviews {
-    font-size: 8px;
+    font-size: 9px;
   }
 
   .currentPrice {
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .oldPrice {
@@ -422,9 +437,9 @@
 
   .mobileCartButton {
     width: 100%;
-    min-height: 40px;
-    margin-top: 12px;
-    padding: 8px;
+    min-height: 38px;
+    margin-top: 10px;
+    padding: 7px;
     border: 0;
     border-radius: var(--radius-sm);
     color: var(--color-white);
@@ -436,58 +451,36 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    font-size: 10px;
+    gap: 6px;
+    font-size: 11px;
     font-weight: 700;
   }
 }
 
-@media (max-width: 520px) {
-  .sectionHeader {
-    display: block;
+@media (max-width: 480px) {
+  .section {
+    padding: 36px 0;
   }
 
-  .viewAllButton {
-    margin-top: 17px;
+  .sectionHeader h2 {
+    font-size: 24px;
   }
 
   .productGrid {
     gap: 10px;
   }
 
-  .imageArea {
-    aspect-ratio: 1 / 1.08;
-  }
-
-  .featureBadge {
-    display: none;
-  }
-
-  .wishlistButton {
-    width: 32px;
-    height: 32px;
-  }
-
   .productContent {
-    padding: 12px 9px;
-  }
-
-  .category {
-    margin-bottom: 5px;
-    font-size: 8px;
+    padding: 10px 8px 12px;
   }
 
   .productName {
-    min-height: 39px;
+    min-height: 36px;
     font-size: 11px;
   }
 
-  .reviews {
-    display: none;
-  }
-
   .currentPrice {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .oldPrice {
@@ -495,19 +488,19 @@
   }
 
   .mobileCartButton {
-    min-height: 38px;
-    margin-top: 10px;
-    font-size: 9px;
+    min-height: 34px;
+    font-size: 10px;
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 340px) {
   .productGrid {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 
   .imageArea {
-    aspect-ratio: 1.2 / 1;
+    aspect-ratio: 1.15 / 1;
   }
 
   .productName {

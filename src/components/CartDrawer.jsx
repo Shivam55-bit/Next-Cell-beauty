@@ -27,7 +27,7 @@ function CartDrawer() {
         tabIndex={isOpen ? 0 : -1}
       />
       <aside
-        className={`absolute inset-y-0 right-0 flex w-full max-w-md transform flex-col overflow-hidden bg-white shadow-soft transition duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'} dark:bg-slate-950 md:w-[440px]`}
+        className={`absolute inset-y-0 right-0 flex w-full max-w-full sm:max-w-md transform flex-col overflow-hidden bg-white shadow-soft transition duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'} dark:bg-slate-950 md:w-[440px]`}
         role="dialog"
         aria-modal="true"
         aria-label="Shopping cart"
