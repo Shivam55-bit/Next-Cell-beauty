@@ -11,6 +11,16 @@ export default function BeforeAfterSlider({ comparisons: initialComparisons }) {
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
 
+  const handleMove = useCallback((clientX) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = clientX - rect.left;
+    let percentage = (x / rect.width) * 100;
+    if (percentage < 0) percentage = 0;
+    if (percentage > 100) percentage = 100;
+    setSliderPosition(percentage);
+  }, []);
+
   useEffect(() => {
     let mounted = true;
     const loadBeforeAfter = async () => {
@@ -37,26 +47,6 @@ export default function BeforeAfterSlider({ comparisons: initialComparisons }) {
     return () => { mounted = false; };
   }, [initialComparisons]);
 
-  // If loading or no active comparisons in database, do not render section
-  if (loading || comparisons.length === 0) {
-    return null;
-  }
-
-  const activeData = comparisons[activeIndex] || comparisons[0];
-  if (!activeData || !activeData.beforeImage || !activeData.afterImage) {
-    return null;
-  }
-
-  const handleMove = useCallback((clientX) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = clientX - rect.left;
-    let percentage = (x / rect.width) * 100;
-    if (percentage < 0) percentage = 0;
-    if (percentage > 100) percentage = 100;
-    setSliderPosition(percentage);
-  }, []);
-
   const handleMouseDown = () => setIsDragging(true);
   const handleMouseUp = () => setIsDragging(false);
 
@@ -69,6 +59,16 @@ export default function BeforeAfterSlider({ comparisons: initialComparisons }) {
     if (!e.touches[0]) return;
     handleMove(e.touches[0].clientX);
   };
+
+  // If loading or no active comparisons in database, do not render section
+  if (loading || comparisons.length === 0) {
+    return null;
+  }
+
+  const activeData = comparisons[activeIndex] || comparisons[0];
+  if (!activeData || !activeData.beforeImage || !activeData.afterImage) {
+    return null;
+  }
 
   return (
     <section className={styles.sectionWrapper}>
