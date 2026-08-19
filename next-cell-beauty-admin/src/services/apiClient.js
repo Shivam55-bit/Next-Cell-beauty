@@ -11,6 +11,13 @@ const getBaseUrl = () => {
 
 const API_BASE_URL = getBaseUrl();
 
+const resolveEndpoint = (resource, id) => {
+  let clean = String(resource || "").trim().replace(/^\/+|\/+$/g, "");
+  if (!clean.startsWith("admin/") && !clean.startsWith("admin")) {
+    clean = `admin/${clean}`;
+  }
+  return id ? `${API_BASE_URL}/${clean}/${id}` : `${API_BASE_URL}/${clean}`;
+};
 
 export const apiClient = {
   getApiBaseUrl() {
@@ -26,10 +33,10 @@ export const apiClient = {
     return headers;
   },
 
-  async get(resource) {
+  async get(resource, id) {
     try {
-      const endpoint = resource.startsWith("admin/") ? resource : `admin/${resource}`;
-      const res = await fetch(`${API_BASE_URL}/${endpoint}`, {
+      const url = resolveEndpoint(resource, id);
+      const res = await fetch(url, {
         headers: { ...this.getAuthHeaders() }
       });
       const data = await res.json().catch(() => ({}));
@@ -45,14 +52,14 @@ export const apiClient = {
 
   async post(resource, newItem) {
     try {
-      const endpoint = resource.startsWith("admin/") ? resource : `admin/${resource}`;
+      const url = resolveEndpoint(resource);
       const isFormData = typeof FormData !== "undefined" && newItem instanceof FormData;
       const headers = { ...this.getAuthHeaders() };
       if (!isFormData) {
         headers["Content-Type"] = "application/json";
       }
 
-      const res = await fetch(`${API_BASE_URL}/${endpoint}`, {
+      const res = await fetch(url, {
         method: "POST",
         headers,
         body: isFormData ? newItem : JSON.stringify(newItem)
@@ -70,9 +77,18 @@ export const apiClient = {
 
   async put(resource, id, updatedFields) {
     try {
-      const endpoint = resource.startsWith("admin/") ? resource : `admin/${resource}`;
-      const url = id ? `${API_BASE_URL}/${endpoint}/${id}` : `${API_BASE_URL}/${endpoint}`;
-      const isFormData = typeof FormData !== "undefined" && updatedFields instanceof FormData;
+      // Support put(resource, id, data) or put(resourceWithId, data)
+      let url;
+      let bodyData;
+      if (typeof id === "object" && id !== null && updatedFields === undefined) {
+        url = resolveEndpoint(resource);
+        bodyData = id;
+      } else {
+        url = resolveEndpoint(resource, id);
+        bodyData = updatedFields;
+      }
+
+      const isFormData = typeof FormData !== "undefined" && bodyData instanceof FormData;
       const headers = { ...this.getAuthHeaders() };
       if (!isFormData) {
         headers["Content-Type"] = "application/json";
@@ -81,7 +97,7 @@ export const apiClient = {
       const res = await fetch(url, {
         method: "PUT",
         headers,
-        body: isFormData ? updatedFields : JSON.stringify(updatedFields)
+        body: isFormData ? bodyData : JSON.stringify(bodyData)
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
@@ -96,8 +112,7 @@ export const apiClient = {
 
   async delete(resource, id) {
     try {
-      const endpoint = resource.startsWith("admin/") ? resource : `admin/${resource}`;
-      const url = id ? `${API_BASE_URL}/${endpoint}/${id}` : `${API_BASE_URL}/${endpoint}`;
+      const url = resolveEndpoint(resource, id);
       const res = await fetch(url, {
         method: "DELETE",
         headers: { ...this.getAuthHeaders() }

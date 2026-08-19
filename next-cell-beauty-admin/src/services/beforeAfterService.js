@@ -1,13 +1,13 @@
 import { apiClient } from "./apiClient";
 
 export const beforeAfterService = {
-  getAll: () => apiClient.get("/admin/before-after"),
-  getById: (id) => apiClient.get(`/admin/before-after/${id}`),
-  create: (data) => apiClient.post("/admin/before-after", data),
-  update: (id, data) => apiClient.put(`/admin/before-after/${id}`, data),
-  delete: (id) => apiClient.delete(`/admin/before-after/${id}`),
+  getAll: () => apiClient.get("before-after"),
+  getById: (id) => apiClient.get("before-after", id),
+  create: (data) => apiClient.post("before-after", data),
+  update: (id, data) => apiClient.put("before-after", id, data),
+  delete: (id) => apiClient.delete("before-after", id),
   toggleStatus: (id, currentStatus) => {
     const nextStatus = currentStatus === "Active" ? "Inactive" : "Active";
-    return apiClient.put(`/admin/before-after/${id}`, { status: nextStatus });
+    return apiClient.put("before-after", id, { status: nextStatus });
   }
 };
