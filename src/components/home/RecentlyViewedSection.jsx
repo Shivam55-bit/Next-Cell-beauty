@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { History, ShoppingBag, Star, ArrowRight } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/cartSlice";
+import { useAuth } from "../../context/AuthContext.jsx";
 import toast from "react-hot-toast";
 import styles from "./RecentlyViewedSection.module.css";
 
@@ -34,6 +35,8 @@ export function recordRecentlyViewed(product) {
 export default function RecentlyViewedSection() {
   const [items, setItems] = useState([]);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     try {
@@ -50,6 +53,12 @@ export default function RecentlyViewedSection() {
   if (!items.length) return null;
 
   const handleAddToCart = (product) => {
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to your cart!");
+      navigate("/login");
+      return;
+    }
+
     dispatch(
       addToCart({
         id: product.id,

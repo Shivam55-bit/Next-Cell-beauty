@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Heart, ShoppingBag, Star, ArrowRight } from "lucide-react";
 import { addToCart } from "../../redux/cartSlice.js";
 import { addToWishlist } from "../../redux/wishlistSlice.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 import toast from "react-hot-toast";
 import styles from "./BestSellerSection.module.css";
 
@@ -36,6 +37,8 @@ function BestSellerSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     let mounted = true;
@@ -83,11 +86,21 @@ function BestSellerSection() {
   }, []);
 
   const handleAddToCart = (product) => {
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to your cart!");
+      navigate("/login");
+      return;
+    }
     dispatch(addToCart({ ...product, quantity: 1 }));
     toast.success("Product added to cart");
   };
 
   const handleWishlist = (product) => {
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to your wishlist!");
+      navigate("/login");
+      return;
+    }
     dispatch(addToWishlist(product));
     toast.success("Added to wishlist");
   };

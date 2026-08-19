@@ -1,7 +1,8 @@
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShoppingBag, Sparkles, Check, Flame } from "lucide-react";
 import { addToCart } from "../../redux/cartSlice";
+import { useAuth } from "../../context/AuthContext.jsx";
 import toast from "react-hot-toast";
 import styles from "./ComboDealsSection.module.css";
 
@@ -58,8 +59,16 @@ const comboBundles = [
 
 export default function ComboDealsSection() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const handleAddBundle = (bundle) => {
+    if (!isAuthenticated) {
+      toast.error("Please login to add bundles to your cart!");
+      navigate("/login");
+      return;
+    }
+
     dispatch(
       addToCart({
         id: bundle.id,

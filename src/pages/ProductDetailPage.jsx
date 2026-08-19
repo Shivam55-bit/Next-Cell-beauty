@@ -27,6 +27,7 @@ import {
 import { addToCart } from "../redux/cartSlice.js";
 import { toggleWishlist } from "../redux/wishlistSlice.js";
 import { fetchProductBySlug, fetchProducts } from "../services/productService.js";
+import { useAuth } from "../context/AuthContext.jsx";
 import api from "../services/api.js";
 import { recordRecentlyViewed } from "../components/home/RecentlyViewedSection.jsx";
 import ShareModal from "../components/common/ShareModal.jsx";
@@ -103,6 +104,7 @@ function ProductDetailPage() {
   const { slug } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const [product, setProduct] = useState(defaultMockProduct);
   const [loading, setLoading] = useState(true);
@@ -197,6 +199,12 @@ function ProductDetailPage() {
   };
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to your cart!");
+      navigate("/login");
+      return;
+    }
+
     const item = {
       id: `${product.id}-${selectedShade?.name || "std"}-${selectedSize?.label || "std"}`,
       productId: product.id,
@@ -214,11 +222,22 @@ function ProductDetailPage() {
   };
 
   const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      toast.error("Please login to purchase items!");
+      navigate("/login");
+      return;
+    }
     handleAddToCart();
     navigate("/checkout");
   };
 
   const handleWishlistToggle = () => {
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to your wishlist!");
+      navigate("/login");
+      return;
+    }
+
     dispatch(toggleWishlist({
       id: product.id,
       name: product.name,

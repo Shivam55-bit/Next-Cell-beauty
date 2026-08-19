@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ShoppingCart, Trash2, Heart, Loader2, Star, Settings, ShoppingBag, MapPin, ReceiptText, Sparkles, LogOut } from 'lucide-react'
 import { removeFromWishlist } from '../redux/wishlistSlice.js'
 import { addToCart } from '../redux/cartSlice.js'
 import { getMyWishlist, removeWishlistItem } from '../services/wishlistService.js'
+import { useAuth } from '../context/AuthContext.jsx'
 import { formatCurrency } from '../utils/format.js'
 import toast from 'react-hot-toast'
 import styles from './PageStyles.module.css'
@@ -34,6 +35,8 @@ function StarRating({ rating = 0 }) {
 
 function WishlistPage() {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [remoteItems, setRemoteItems] = useState([])
@@ -70,6 +73,11 @@ function WishlistPage() {
   }
 
   const handleMoveToCart = (product) => {
+    if (!isAuthenticated) {
+      toast.error('Please login to add items to your cart!')
+      navigate('/login')
+      return
+    }
     dispatch(addToCart({ ...product, quantity: 1 }))
     dispatch(removeFromWishlist(product._id || product.id))
     setRemoteItems((prev) => prev.filter((p) => (p._id || p.id) !== (product._id || product.id)))
