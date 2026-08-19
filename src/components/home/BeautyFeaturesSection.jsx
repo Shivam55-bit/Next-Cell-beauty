@@ -5,63 +5,58 @@ import {
   Sparkles,
   PlayCircle,
 } from "lucide-react";
-
+import { useLanguage } from "../../context/LanguageContext.jsx";
 import shadeFinderImage from "../../assets/features/shade-finder.png";
 import skinQuizImage from "../../assets/features/skin-quiz.png";
 import tutorialsImage from "../../assets/features/beauty-tutorials.png";
-
 import styles from "./BeautyFeaturesSection.module.css";
 
-const features = [
-  {
-    id: 1,
-    eyebrow: "Personalised Beauty",
-    title: "Find Your Perfect Shade",
-    description:
-      "Discover foundation, concealer and lipstick shades selected for your skin tone and undertone.",
-    buttonText: "Try Shade Finder",
-    link: "/shade-finder",
-    image: shadeFinderImage,
-    icon: Palette,
-    variant: "navy",
-  },
-  {
-    id: 2,
-    eyebrow: "Made for Your Skin",
-    title: "Take the Skin Quiz",
-    description:
-      "Answer a few simple questions and receive a personalised skincare routine.",
-    buttonText: "Start Skin Quiz",
-    link: "/skin-quiz",
-    image: skinQuizImage,
-    icon: Sparkles,
-    variant: "green",
-  },
-  {
-    id: 3,
-    eyebrow: "Learn & Create",
-    title: "Beauty Tutorials",
-    description:
-      "Explore makeup looks, skincare routines, product guides and expert beauty tips.",
-    buttonText: "Watch Tutorials",
-    link: "/beauty-tutorials",
-    image: tutorialsImage,
-    icon: PlayCircle,
-    variant: "light",
-  },
-];
-
 function BeautyFeaturesSection() {
+  const { t } = useLanguage();
+
+  const features = [
+    {
+      id: 1,
+      eyebrow: t("beautyPersonal"),
+      title: t("findShadeTitle"),
+      description: t("findShadeDesc"),
+      buttonText: t("tryShadeFinder"),
+      link: "/shade-finder",
+      image: shadeFinderImage,
+      icon: Palette,
+      variant: "navy",
+    },
+    {
+      id: 2,
+      eyebrow: t("beautyPersonal"),
+      title: t("skinQuizTitle"),
+      description: t("skinQuizDesc"),
+      buttonText: t("startSkinQuiz"),
+      link: "/skin-quiz",
+      image: skinQuizImage,
+      icon: Sparkles,
+      variant: "green",
+    },
+    {
+      id: 3,
+      eyebrow: t("beautyPersonal"),
+      title: t("tutorialsTitle"),
+      description: t("tutorialsDesc"),
+      buttonText: t("watchTutorials"),
+      link: "/beauty-tutorials",
+      image: tutorialsImage,
+      icon: PlayCircle,
+      variant: "light",
+    },
+  ];
+
   return (
     <section className={styles.section}>
       <div className="container">
         <div className={styles.sectionHeader}>
-          <span>Beauty Made Personal</span>
-          <h2>More Ways to Discover Your Beauty</h2>
-          <p>
-            Helpful tools, personalised recommendations and expert guidance for
-            your complete beauty journey.
-          </p>
+          <span>{t("beautyPersonal")}</span>
+          <h2>{t("discoverBeautyTitle")}</h2>
+          <p>{t("discoverBeautySubtitle")}</p>
         </div>
 
         <div className={styles.featureGrid}>

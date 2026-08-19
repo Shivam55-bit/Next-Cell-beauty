@@ -5,6 +5,7 @@ import { Heart, ShoppingBag, Star, ArrowRight } from "lucide-react";
 import { addToCart } from "../../redux/cartSlice.js";
 import { addToWishlist } from "../../redux/wishlistSlice.js";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { useLanguage } from "../../context/LanguageContext.jsx";
 import toast from "react-hot-toast";
 import styles from "./BestSellerSection.module.css";
 
@@ -117,18 +118,13 @@ function BestSellerSection() {
       <div className="container">
         <div className={styles.sectionHeader}>
           <div className={styles.headingContent}>
-            <span className={styles.eyebrow}>Loved by Beauty Enthusiasts</span>
-            <h2>
-              Our Best <span>Sellers</span>
-            </h2>
-            <p>
-              Discover our most-loved beauty products, selected for quality,
-              performance and everyday confidence.
-            </p>
+            <span className={styles.eyebrow}>{t("lovedByEnthusiasts")}</span>
+            <h2>{t("ourBestSellers")}</h2>
+            <p>{t("bestSellersSubtitle")}</p>
           </div>
 
           <Link to="/products" className={styles.viewAllButton}>
-            View All Products
+            {t("viewAllProducts")}
             <ArrowRight size={18} />
           </Link>
         </div>
@@ -152,7 +148,7 @@ function BestSellerSection() {
               to="/shop"
               style={{ color: "#e879a0", fontWeight: 600, marginTop: 12, display: "inline-block" }}
             >
-              Browse all products →
+              {t("viewAllProducts")} →
             </Link>
           </div>
         ) : products.length === 0 ? (
@@ -168,7 +164,7 @@ function BestSellerSection() {
               to="/shop"
               style={{ color: "#e879a0", fontWeight: 600 }}
             >
-              Browse all products →
+              {t("viewAllProducts")} →
             </Link>
           </div>
         ) : (
@@ -187,50 +183,32 @@ function BestSellerSection() {
                         loading="lazy"
                       />
                     ) : (
-                      <div
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          background: "#1e293b",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "rgba(255,255,255,0.3)",
-                          fontSize: 40,
-                        }}
-                      >
-                        🛍️
+                      <div className={styles.placeholderImage}>
+                        <span>{product.name?.[0]}</span>
                       </div>
                     )}
                   </Link>
 
-                  <div className={styles.badges}>
-                    {product.badge && (
-                      <span className={styles.featureBadge}>{product.badge}</span>
-                    )}
-                    {product.discount > 0 && (
-                      <span className={styles.discountBadge}>
-                        -{product.discount}%
-                      </span>
-                    )}
-                  </div>
+                  {product.badge && (
+                    <span className={styles.badge}>{product.badge}</span>
+                  )}
 
                   <button
                     type="button"
                     className={styles.wishlistButton}
                     onClick={() => handleWishlist(product)}
-                    aria-label={`Add ${product.name} to wishlist`}
+                    aria-label="Add to wishlist"
                   >
-                    <Heart size={20} />
+                    <Heart size={18} />
                   </button>
 
                   <button
                     type="button"
-                    className={styles.quickCartButton}
+                    className={styles.quickAddButton}
                     onClick={() => handleAddToCart(product)}
                   >
                     <ShoppingBag size={18} />
-                    Add to Cart
+                    {t("addToCart")}
                   </button>
                 </div>
 
@@ -251,7 +229,7 @@ function BestSellerSection() {
                         <span>{product.rating}</span>
                       </div>
                       <span className={styles.reviews}>
-                        ({product.reviews} reviews)
+                        ({product.reviews} {t("customerReviews")})
                       </span>
                     </div>
                   )}
@@ -273,7 +251,7 @@ function BestSellerSection() {
                     onClick={() => handleAddToCart(product)}
                   >
                     <ShoppingBag size={17} />
-                    Add to Cart
+                    {t("addToCart")}
                   </button>
                 </div>
               </article>

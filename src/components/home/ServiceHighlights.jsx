@@ -7,49 +7,51 @@ import {
   WalletCards,
   Headphones,
 } from "lucide-react";
-
+import { useLanguage } from "../../context/LanguageContext.jsx";
 import styles from "./ServiceHighlights.module.css";
 
-const services = [
-  {
-    id: 1,
-    title: "100% Original Products",
-    description: "Sourced from trusted beauty houses",
-    icon: BadgeCheck,
-  },
-  {
-    id: 2,
-    title: "Complimentary Shipping",
-    description: "Above ₹999 in India",
-    icon: Truck,
-  },
-  {
-    id: 3,
-    title: "Easy Returns",
-    description: "Polished exchange experience",
-    icon: RotateCcw,
-  },
-  {
-    id: 4,
-    title: "Secure Payments",
-    description: "Luxury checkout with confidence",
-    icon: ShieldCheck,
-  },
-  {
-    id: 5,
-    title: "COD Available",
-    description: "Anywhere in India",
-    icon: WalletCards,
-  },
-  {
-    id: 6,
-    title: "Concierge Support",
-    description: "Beauty assistance 24×7",
-    icon: Headphones,
-  },
-];
-
 function ServiceHighlights() {
+  const { t } = useLanguage();
+
+  const services = [
+    {
+      id: 1,
+      title: t("authentic100"),
+      description: t("authentic100Desc"),
+      icon: BadgeCheck,
+    },
+    {
+      id: 2,
+      title: t("fastDelivery"),
+      description: t("fastDeliveryDesc"),
+      icon: Truck,
+    },
+    {
+      id: 3,
+      title: t("easyReturns"),
+      description: t("easyReturnsDesc"),
+      icon: RotateCcw,
+    },
+    {
+      id: 4,
+      title: t("securePayments"),
+      description: t("securePaymentsDesc"),
+      icon: ShieldCheck,
+    },
+    {
+      id: 5,
+      title: t("codAvailableTop"),
+      description: t("fastDeliveryDesc"),
+      icon: WalletCards,
+    },
+    {
+      id: 6,
+      title: t("customerService"),
+      description: t("madeWithLove"),
+      icon: Headphones,
+    },
+  ];
+
   return (
     <section className={styles.section} aria-label="Shopping benefits">
       <div className="container">

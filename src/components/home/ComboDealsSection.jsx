@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShoppingBag, Sparkles, Check, Flame } from "lucide-react";
 import { addToCart } from "../../redux/cartSlice";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { useLanguage } from "../../context/LanguageContext.jsx";
 import api from "../../services/api.js";
 import toast from "react-hot-toast";
 import styles from "./ComboDealsSection.module.css";
@@ -14,6 +15,7 @@ export default function ComboDealsSection() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { t } = useLanguage();
 
   useEffect(() => {
     let mounted = true;
@@ -68,10 +70,10 @@ export default function ComboDealsSection() {
         <div className={styles.header}>
           <div className={styles.badge}>
             <Flame size={16} />
-            <span>Value Bundles</span>
+            <span>{t("valueBundles")}</span>
           </div>
-          <h2>Special Combo Deals & Kits</h2>
-          <p>Curated beauty routines packed together at unbeatable bundle prices. Maximum glow, maximum savings.</p>
+          <h2>{t("specialComboDeals")}</h2>
+          <p>{t("comboSubtitle")}</p>
         </div>
 
         <div className={styles.bundleGrid}>
@@ -79,8 +81,8 @@ export default function ComboDealsSection() {
             <div key={bundle.id || bundle._id} className={styles.bundleCard}>
               <div className={styles.imageBox}>
                 <img src={bundle.image} alt={bundle.name} loading="lazy" />
-                <span className={styles.savingsTag}>{bundle.badge || "Special Deal"}</span>
-                <span className={styles.popularBadge}>{bundle.tag || "Combo Kit"}</span>
+                <span className={styles.savingsTag}>{bundle.badge || t("save")}</span>
+                <span className={styles.popularBadge}>{bundle.tag || t("valueBundles")}</span>
               </div>
 
               <div className={styles.content}>
@@ -104,7 +106,7 @@ export default function ComboDealsSection() {
                     )}
                   </div>
                   <span className={styles.savePill}>
-                    Save ₹{Number(bundle.savings || (bundle.originalPrice ? bundle.originalPrice - bundle.bundlePrice : 0))}
+                    {t("save")} ₹{Number(bundle.savings || (bundle.originalPrice ? bundle.originalPrice - bundle.bundlePrice : 0))}
                   </span>
                 </div>
 
@@ -114,7 +116,7 @@ export default function ComboDealsSection() {
                   onClick={() => handleAddBundle(bundle)}
                 >
                   <ShoppingBag size={18} />
-                  Add Bundle to Cart
+                  {t("addBundleToCart")}
                 </button>
               </div>
             </div>

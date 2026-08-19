@@ -1,9 +1,11 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Sparkles, MoveHorizontal } from "lucide-react";
 import api from "../../services/api.js";
+import { useLanguage } from "../../context/LanguageContext.jsx";
 import styles from "./BeforeAfterSlider.module.css";
 
 export default function BeforeAfterSlider({ comparisons: initialComparisons }) {
+  const { t } = useLanguage();
   const [comparisons, setComparisons] = useState(initialComparisons || []);
   const [loading, setLoading] = useState(!initialComparisons);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -76,10 +78,10 @@ export default function BeforeAfterSlider({ comparisons: initialComparisons }) {
         <div className={styles.header}>
           <div className={styles.badge}>
             <Sparkles size={16} />
-            <span>Proven Efficacy</span>
+            <span>{t("provenEfficacy")}</span>
           </div>
-          <h2>Real Results: Before & After</h2>
-          <p>See the visible transformation with Next Cell Beauty formulas. Slide to compare.</p>
+          <h2>{t("realResults")}</h2>
+          <p>{t("beforeAfterSubtitle")}</p>
         </div>
 
         {comparisons.length > 1 && (
@@ -147,7 +149,7 @@ export default function BeforeAfterSlider({ comparisons: initialComparisons }) {
               <h3>{activeData.title}</h3>
               <p>{activeData.period}</p>
             </div>
-            <span className={styles.instruction}>Drag slider left or right</span>
+            <span className={styles.instruction}>{t("dragSlider")}</span>
           </div>
         </div>
       </div>

@@ -18,28 +18,12 @@ import styles from "./Navbar.module.css";
 import { getMyWishlist } from "../services/wishlistService.js";
 import { addToWishlist, removeFromWishlist } from "../redux/wishlistSlice.js";
 import { useAuth } from "../context/AuthContext.jsx";
-import { useTranslation, setLanguage } from "../utils/translations.js";
-
-const categories = [
-  { label: "Skincare", path: "/shop?category=skincare" },
-  { label: "Makeup", path: "/shop?category=makeup" },
-  { label: "Haircare", path: "/shop?category=haircare" },
-  { label: "Fragrance", path: "/shop?category=fragrance" },
-  { label: "Bath & Body", path: "/shop?category=bath-body" },
-  { label: "Beauty Tools", path: "/shop?category=beauty-tools" },
-  { label: "Beauty Blog", path: "/blog" },
-  { label: "FAQs", path: "/faq" },
-  { label: "Brands", path: "/brands" },
-  { label: "Offers", path: "/offers" },
-  { label: "New Arrivals", path: "/new-arrivals" },
-  { label: "Best Sellers", path: "/best-sellers" },
-];
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 function Navbar() {
   const dispatch = useDispatch();
-  const { isAuthenticated, user, logout } = useAuth();
-  const { t, currentLang, setLang } = useTranslation();
-  const [lang, setLocalLang] = useState(currentLang);
+  const { isAuthenticated, user } = useAuth();
+  const { t, lang, toggleLanguage } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
@@ -47,6 +31,21 @@ function Navbar() {
   const cartCount = useSelector((state) => state.cart?.items?.length || 0);
   const wishlistCount = useSelector((state) => state.wishlist?.items?.length || 0);
   const categoryRef = useRef(null);
+
+  const categories = [
+    { label: t("skincare"), path: "/shop?category=skincare" },
+    { label: t("makeup"), path: "/shop?category=makeup" },
+    { label: t("haircare"), path: "/shop?category=haircare" },
+    { label: t("fragrance"), path: "/shop?category=fragrance" },
+    { label: t("bathBody"), path: "/shop?category=bath-body" },
+    { label: t("beautyTools"), path: "/shop?category=beauty-tools" },
+    { label: t("beautyBlog"), path: "/blog" },
+    { label: t("faqs"), path: "/faq" },
+    { label: t("brands"), path: "/brands" },
+    { label: t("offers"), path: "/offers" },
+    { label: t("newArrivals"), path: "/new-arrivals" },
+    { label: t("bestSellers"), path: "/best-sellers" },
+  ];
 
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
@@ -98,10 +97,9 @@ function Navbar() {
     event.preventDefault();
 
     const query = searchValue.trim();
-
     if (!query) return;
 
-    window.location.href = `/search?q=${encodeURIComponent(query)}`;
+    window.location.href = `/shop?search=${encodeURIComponent(query)}`;
   };
 
   const toggleCategoryDropdown = () => {
@@ -115,29 +113,24 @@ function Navbar() {
           <div className={`container ${styles.topBarInner}`}>
             <span>
               <Truck size={15} />
-              Free Shipping on Orders Above ₹999
+              {t("freeShippingTop")}
             </span>
 
             <span className={styles.topBarCenter}>
               <WalletCards size={15} />
-              COD Available Across India
+              {t("codAvailableTop")}
             </span>
 
             <span className={styles.topBarRight}>
               <Gift size={15} />
-              Exclusive Offers on Premium Beauty
+              {t("exclusiveOffersTop")}
               <button
                 type="button"
                 className={styles.langSwitchBtn}
-                onClick={() => {
-                  const next = lang === "en" ? "hi" : "en";
-                  setLang(next);
-                  setLocalLang(next);
-                  window.location.reload();
-                }}
+                onClick={toggleLanguage}
                 title="Switch Language / भाषा बदलें"
               >
-                🌐 {lang === "en" ? "हिंदी" : "English"}
+                🌐 {t("langSwitch")}
               </button>
             </span>
           </div>
@@ -161,7 +154,7 @@ function Navbar() {
                 type="search"
                 value={searchValue}
                 onChange={(event) => setSearchValue(event.target.value)}
-                placeholder="Search for skincare, makeup, haircare and more..."
+                placeholder={t("searchPlaceholder")}
                 aria-label="Search products"
               />
 
@@ -171,9 +164,9 @@ function Navbar() {
             </form>
 
             <div className={styles.headerActions}>
-              <Link to={isAuthenticated ? "/profile" : "/login"} className={styles.actionItem} title={isAuthenticated ? "My Account" : "Login"}>
+              <Link to={isAuthenticated ? "/profile" : "/login"} className={styles.actionItem} title={isAuthenticated ? t("account") : t("login")}>
                 <UserRound size={25} />
-                <span>{isAuthenticated ? (user?.fullName?.split(" ")[0] || user?.name?.split(" ")[0] || "Account") : "Login"}</span>
+                <span>{isAuthenticated ? (user?.fullName?.split(" ")[0] || user?.name?.split(" ")[0] || t("account")) : t("login")}</span>
               </Link>
 
               <Link to="/wishlist" className={styles.actionItem}>
@@ -181,7 +174,7 @@ function Navbar() {
                   <Heart size={25} />
                   <small>{wishlistCount}</small>
                 </span>
-                <span>Wishlist</span>
+                <span>{t("wishlist")}</span>
               </Link>
 
               <Link to="/cart" className={styles.actionItem}>
@@ -189,7 +182,7 @@ function Navbar() {
                   <ShoppingBag size={25} />
                   <small>{cartCount}</small>
                 </span>
-                <span>Cart</span>
+                <span>{t("cart")}</span>
               </Link>
             </div>
 
@@ -202,14 +195,14 @@ function Navbar() {
               <Search size={24} />
             </button>
 
-          <Link
-            to="/cart"
-            className={styles.mobileCartButton}
-            aria-label="Open cart"
-          >
-            <ShoppingBag size={24} />
-            <small>{cartCount}</small>
-          </Link>
+            <Link
+              to="/cart"
+              className={styles.mobileCartButton}
+              aria-label="Open cart"
+            >
+              <ShoppingBag size={24} />
+              <small>{cartCount}</small>
+            </Link>
           </div>
 
           {mobileSearchOpen && (
@@ -221,7 +214,7 @@ function Navbar() {
                 type="search"
                 value={searchValue}
                 onChange={(event) => setSearchValue(event.target.value)}
-                placeholder="Search beauty products..."
+                placeholder={t("searchPlaceholder")}
                 autoFocus
               />
 
@@ -243,7 +236,7 @@ function Navbar() {
                 aria-haspopup="true"
               >
                 <Menu size={20} />
-                Shop by Category
+                {t("shopByCategory")}
                 <ChevronDown size={17} />
               </button>
 
@@ -251,7 +244,7 @@ function Navbar() {
                 <div className={styles.categoryDropdown}>
                   {categories.map((item) => (
                     <Link
-                      key={item.label}
+                      key={item.path}
                       to={item.path}
                       className={styles.categoryDropdownLink}
                       onClick={() => setCategoryDropdownOpen(false)}
@@ -266,7 +259,7 @@ function Navbar() {
             <div className={styles.navLinks}>
               {categories.map((item) => (
                 <NavLink
-                  key={item.label}
+                  key={item.path}
                   to={item.path}
                   className={({ isActive }) =>
                     `${styles.navLink} ${
@@ -311,12 +304,12 @@ function Navbar() {
         <div className={styles.mobileAccountLinks}>
           <Link to={isAuthenticated ? "/profile" : "/login"} onClick={() => setMobileMenuOpen(false)}>
             <UserRound size={20} />
-            {isAuthenticated ? (user?.fullName || user?.name || "My Account") : "Login / Register"}
+            {isAuthenticated ? (user?.fullName || user?.name || t("myProfile")) : `${t("login")} / ${t("register")}`}
           </Link>
 
           <Link to="/wishlist" onClick={() => setMobileMenuOpen(false)}>
             <Heart size={20} />
-            My Wishlist
+            {t("wishlist")}
           </Link>
         </div>
 
@@ -327,7 +320,7 @@ function Navbar() {
 
           {categories.map((item) => (
             <Link
-              key={item.label}
+              key={item.path}
               to={item.path}
               onClick={() => setMobileMenuOpen(false)}
             >
@@ -335,20 +328,8 @@ function Navbar() {
             </Link>
           ))}
 
-          <Link to="/about" onClick={() => setMobileMenuOpen(false)}>
-            About Us
-          </Link>
-
-          <Link to="/blog" onClick={() => setMobileMenuOpen(false)}>
-            Beauty Blog
-          </Link>
-
-          <Link to="/faq" onClick={() => setMobileMenuOpen(false)}>
-            FAQs
-          </Link>
-
           <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>
-            Contact Us
+            {t("contact")}
           </Link>
         </div>
       </aside>

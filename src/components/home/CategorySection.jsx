@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { API_BASE_URL } from "../../services/api.js";
+import { useLanguage } from "../../context/LanguageContext.jsx";
 import styles from "./CategorySection.module.css";
 
 function CategorySkeleton() {
@@ -19,6 +20,7 @@ function CategorySkeleton() {
 }
 
 function CategorySection() {
+  const { t } = useLanguage();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -119,16 +121,13 @@ function CategorySection() {
       <div className="container">
         <div className={styles.sectionHeader}>
           <div>
-            <span className={styles.eyebrow}>Explore Our Collections</span>
-            <h2>Shop by Category</h2>
-            <p>
-              Discover beauty essentials thoughtfully selected for your daily
-              routine.
-            </p>
+            <span className={styles.eyebrow}>{t("exploreCollections")}</span>
+            <h2>{t("shopByCategoryTitle")}</h2>
+            <p>{t("categorySubtitle")}</p>
           </div>
 
           <Link to="/shop" className={styles.viewAllLink}>
-            View All Products
+            {t("viewAllProducts")}
           </Link>
         </div>
 

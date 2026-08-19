@@ -15,43 +15,44 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 import BrandLogo from "./common/BrandLogo";
-
+import { useLanguage } from "../context/LanguageContext.jsx";
 import styles from "./Footer.module.css";
 
-const quickLinks = [
-  { label: "About Us", path: "/about" },
-  { label: "Contact Us", path: "/contact" },
-  { label: "Shop", path: "/shop" },
-  { label: "Beauty Blog", path: "/blog" },
-  { label: "FAQs", path: "/faq" },
-  { label: "Best Sellers", path: "/best-sellers" },
-  { label: "New Arrivals", path: "/new-arrivals" },
-  { label: "Offers", path: "/offers" },
-];
-
-const categories = [
-  { label: "Skincare", path: "/shop?category=skincare" },
-  { label: "Makeup", path: "/shop?category=makeup" },
-  { label: "Haircare", path: "/shop?category=haircare" },
-  { label: "Fragrance", path: "/shop?category=fragrance" },
-  { label: "Bath & Body", path: "/shop?category=bath-body" },
-  { label: "Beauty Tools", path: "/shop?category=beauty-tools" },
-];
-
-const supportLinks = [
-  { label: "My Account", path: "/profile" },
-  { label: "My Orders", path: "/orders" },
-  { label: "Track Order", path: "/track-order" },
-  { label: "My Reviews", path: "/my-reviews" },
-  { label: "Wishlist", path: "/wishlist" },
-  { label: "Shipping Policy", path: "/shipping-policy" },
-  { label: "Return & Refund Policy", path: "/refund-policy" },
-  { label: "Privacy Policy", path: "/privacy-policy" },
-  { label: "Terms & Conditions", path: "/terms-and-conditions" },
-];
-
 function Footer() {
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
+
+  const quickLinks = [
+    { label: t("aboutNextCell"), path: "/about" },
+    { label: t("contact"), path: "/contact" },
+    { label: t("shopByCategoryTitle"), path: "/shop" },
+    { label: t("beautyBlog"), path: "/blog" },
+    { label: t("faqs"), path: "/faq" },
+    { label: t("bestSellers"), path: "/best-sellers" },
+    { label: t("newArrivals"), path: "/new-arrivals" },
+    { label: t("offers"), path: "/offers" },
+  ];
+
+  const categories = [
+    { label: t("skincare"), path: "/shop?category=skincare" },
+    { label: t("makeup"), path: "/shop?category=makeup" },
+    { label: t("haircare"), path: "/shop?category=haircare" },
+    { label: t("fragrance"), path: "/shop?category=fragrance" },
+    { label: t("bathBody"), path: "/shop?category=bath-body" },
+    { label: t("beautyTools"), path: "/shop?category=beauty-tools" },
+  ];
+
+  const supportLinks = [
+    { label: t("account"), path: "/profile" },
+    { label: t("myOrders"), path: "/orders" },
+    { label: t("trackOrder"), path: "/track-order" },
+    { label: t("reviews"), path: "/my-reviews" },
+    { label: t("wishlist"), path: "/wishlist" },
+    { label: t("shippingPolicy"), path: "/shipping-policy" },
+    { label: t("returnPolicy"), path: "/refund-policy" },
+    { label: t("privacyPolicy"), path: "/privacy-policy" },
+    { label: t("termsConditions"), path: "/terms-and-conditions" },
+  ];
 
   return (
     <footer className={styles.footer}>
@@ -64,8 +65,8 @@ function Footer() {
               </div>
 
               <div>
-                <h3>Fast Delivery</h3>
-                <p>Across India</p>
+                <h3>{t("fastDelivery")}</h3>
+                <p>{t("codAvailableTop")}</p>
               </div>
             </div>
 
@@ -75,8 +76,8 @@ function Footer() {
               </div>
 
               <div>
-                <h3>100% Original</h3>
-                <p>Authentic Products</p>
+                <h3>{t("authentic100")}</h3>
+                <p>{t("authentic100Desc")}</p>
               </div>
             </div>
 
@@ -86,8 +87,8 @@ function Footer() {
               </div>
 
               <div>
-                <h3>Secure Payment</h3>
-                <p>Safe Checkout</p>
+                <h3>{t("securePayments")}</h3>
+                <p>{t("securePaymentsDesc")}</p>
               </div>
             </div>
           </div>
@@ -101,9 +102,7 @@ function Footer() {
               <BrandLogo variant="footer" />
 
               <p className={styles.brandDescription}>
-                NEXT CELL BEAUTY brings premium skincare, makeup, haircare,
-                fragrance and beauty essentials together in one trusted online
-                destination.
+                {t("aboutFooterText")}
               </p>
 
               <div className={styles.socialLinks}>
@@ -146,11 +145,11 @@ function Footer() {
             </div>
 
             <div className={styles.linkColumn}>
-              <h3>Quick Links</h3>
+              <h3>{t("quickLinks")}</h3>
 
               <ul>
                 {quickLinks.map((item) => (
-                  <li key={item.label}>
+                  <li key={item.path}>
                     <Link to={item.path}>
                       <ArrowRight size={14} />
                       {item.label}
@@ -161,11 +160,11 @@ function Footer() {
             </div>
 
             <div className={styles.linkColumn}>
-              <h3>Beauty Categories</h3>
+              <h3>{t("shopByCategoryTitle")}</h3>
 
               <ul>
                 {categories.map((item) => (
-                  <li key={item.label}>
+                  <li key={item.path}>
                     <Link to={item.path}>
                       <ArrowRight size={14} />
                       {item.label}
@@ -176,11 +175,11 @@ function Footer() {
             </div>
 
             <div className={styles.linkColumn}>
-              <h3>Customer Support</h3>
+              <h3>{t("customerService")}</h3>
 
               <ul>
                 {supportLinks.map((item) => (
-                  <li key={item.label}>
+                  <li key={item.path}>
                     <Link to={item.path}>
                       <ArrowRight size={14} />
                       {item.label}
@@ -191,80 +190,45 @@ function Footer() {
             </div>
 
             <div className={styles.contactColumn}>
-              <h3>Get in Touch</h3>
+              <h3>{t("contact")}</h3>
 
               <ul className={styles.contactList}>
                 <li>
                   <div className={styles.contactIcon}>
                     <MapPin size={18} />
                   </div>
-
-                  <div>
-                    <span>Address</span>
-                    <p>India</p>
-                  </div>
+                  <span>Mumbai, Maharashtra, India</span>
                 </li>
 
                 <li>
                   <div className={styles.contactIcon}>
                     <Phone size={18} />
                   </div>
-
-                  <div>
-                    <span>Phone</span>
-                    <a href="tel:+919999999999">+91 99999 99999</a>
-                  </div>
+                  <a href="tel:+919876543210">+91 98765 43210</a>
                 </li>
 
                 <li>
                   <div className={styles.contactIcon}>
                     <Mail size={18} />
                   </div>
-
-                  <div>
-                    <span>Email</span>
-                    <a href="mailto:support@nextcellbeauty.com">
-                      support@nextcellbeauty.com
-                    </a>
-                  </div>
+                  <a href="mailto:support@nextcellbeauty.com">
+                    support@nextcellbeauty.com
+                  </a>
                 </li>
               </ul>
-
-              <div className={styles.supportNote}>
-                <strong>Customer Support</strong>
-                <p>Monday–Saturday, 10:00 AM–7:00 PM</p>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.paymentRow}>
-            <div className={styles.paymentText}>
-              <ShieldCheck size={18} />
-
-              <span>
-                Secure payments powered by trusted payment providers
-              </span>
-            </div>
-
-            <div className={styles.paymentMethods}>
-              <span>UPI</span>
-              <span>VISA</span>
-              <span>Mastercard</span>
-              <span>RuPay</span>
-              <span>COD</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className={styles.bottomFooter}>
-        <div className={`container ${styles.bottomFooterInner}`}>
+      <div className={styles.bottomBar}>
+        <div className={`container ${styles.bottomBarInner}`}>
           <p>
-            © {currentYear} NEXT CELL BEAUTY. All Rights Reserved.
+            © {currentYear} NEXT CELL BEAUTY. {t("allRightsReserved")}
           </p>
 
-          <p>
-            Designed & Developed by <strong>Web2Export</strong>
+          <p className={styles.designerCredit}>
+            {t("madeWithLove")}
           </p>
         </div>
       </div>

@@ -28,6 +28,7 @@ import { addToCart } from "../redux/cartSlice.js";
 import { toggleWishlist } from "../redux/wishlistSlice.js";
 import { fetchProductBySlug, fetchProducts } from "../services/productService.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useLanguage } from "../context/LanguageContext.jsx";
 import api from "../services/api.js";
 import { recordRecentlyViewed } from "../components/home/RecentlyViewedSection.jsx";
 import ShareModal from "../components/common/ShareModal.jsx";
@@ -105,6 +106,7 @@ function ProductDetailPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { t } = useLanguage();
 
   const [product, setProduct] = useState(defaultMockProduct);
   const [loading, setLoading] = useState(true);
@@ -637,8 +639,8 @@ function ProductDetailPage() {
             <div className={styles.stockMessage}>
               <span />
               {selectedShade.stock > 0
-                ? `In Stock • Only ${selectedShade.stock} items left in this shade`
-                : "Currently Out of Stock"}
+                ? `${t("inStock")} • ${t("onlyLeft", { stock: selectedShade.stock })}`
+                : t("outOfStock")}
             </div>
 
             {/* Purchase CTA row */}
@@ -660,7 +662,7 @@ function ProductDetailPage() {
                 disabled={selectedShade.stock <= 0}
               >
                 <ShoppingBag size={20} />
-                {selectedShade.stock <= 0 ? "Out of Stock" : "Add to Cart"}
+                {selectedShade.stock <= 0 ? t("outOfStock") : t("addToCart")}
               </button>
 
               <button
@@ -670,7 +672,7 @@ function ProductDetailPage() {
                 disabled={selectedShade.stock <= 0}
               >
                 <Zap size={20} />
-                Buy Now
+                {t("buyNow")}
               </button>
             </div>
 

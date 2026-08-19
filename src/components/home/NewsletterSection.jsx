@@ -14,6 +14,7 @@ import beautyFour from "../../assets/instagram/beauty-4.png";
 import beautyFive from "../../assets/instagram/beauty-5.png";
 import beautySix from "../../assets/instagram/beauty-6.png";
 
+import { useLanguage } from "../../context/LanguageContext.jsx";
 import styles from "./NewsletterSection.module.css";
 
 const galleryImages = [
@@ -50,6 +51,7 @@ const galleryImages = [
 ];
 
 function NewsletterSection() {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState({
     type: "",
@@ -165,14 +167,13 @@ function NewsletterSection() {
             </div>
 
             <span className={styles.newsletterLabel}>
-              Join Our Beauty Community
+              {t("joinClub")}
             </span>
 
-            <h2>Get Beauty Tips, New Launches and Exclusive Offers</h2>
+            <h2>{t("joinClub")}</h2>
 
             <p>
-              Subscribe to receive skincare guidance, makeup inspiration,
-              product launches and members-only offers directly in your inbox.
+              {t("newsletterSubtitle")}
             </p>
           </div>
 
@@ -194,7 +195,7 @@ function NewsletterSection() {
                       });
                     }
                   }}
-                  placeholder="Enter your email address"
+                  placeholder={t("emailPlaceholder")}
                   aria-label="Email address"
                   autoComplete="email"
                 />
@@ -203,7 +204,7 @@ function NewsletterSection() {
               <button type="submit" disabled={isSubmitting}>
                 <span className={styles.submitButtonContent}>
                   <ArrowRight size={18} />
-                  <span>{isSubmitting ? "Subscribing..." : "Subscribe Now"}</span>
+                  <span>{isSubmitting ? t("subscribing") : t("subscribe")}</span>
                 </span>
               </button>
             </form>
