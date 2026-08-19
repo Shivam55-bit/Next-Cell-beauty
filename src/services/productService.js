@@ -47,7 +47,17 @@ function determineDisplayPrice(product) {
   return selectedPrice ?? 0
 }
 
+function slugifyName(name) {
+  return String(name || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
 function normalizeProduct(product) {
+  if (!product) return null
+
   const sourceImages = Array.isArray(product.images) && product.images.length
     ? product.images
     : Array.isArray(product.gallery) && product.gallery.length
@@ -65,9 +75,25 @@ function normalizeProduct(product) {
       ? `https://img.youtube.com/vi/${youtubeVideoId}/hqdefault.jpg`
       : ''
 
+  const name = product.name || product.title || ''
+  const id = product.id || product._id || (product._id ? String(product._id) : undefined)
+  const slug = product.slug || slugifyName(name) || (id ? String(id) : '')
+
+  const category = (product.category && typeof product.category === 'object')
+    ? (product.category.name || product.category.title || product.category.slug || '')
+    : (typeof product.category === 'string' ? product.category : '')
+
+  const brand = (product.brand && typeof product.brand === 'object')
+    ? (product.brand.name || product.brand.title || '')
+    : (typeof product.brand === 'string' ? product.brand : '')
+
   return {
     ...product,
-    id: product.id || product._id || (product._id ? String(product._id) : undefined),
+    id,
+    name,
+    slug,
+    category,
+    brand,
     price: determineDisplayPrice(product),
     image,
     gallery,
@@ -87,15 +113,50 @@ function parseProductsResponse(data) {
 export async function fetchProducts() {
   const { data } = await api.get('/products')
   const products = parseProductsResponse(data)
-    return dedupeProducts(products)
-      .map(normalizeProduct)
-      .filter((product) => !product.status || ['published', 'active'].includes(String(product.status).toLowerCase()))
+  return dedupeProducts(products)
+    .map(normalizeProduct)
+    .filter(Boolean)
+    .filter((product) => !product.status || ['published', 'active'].includes(String(product.status).toLowerCase()))
 }
 
 export async function fetchProductBySlug(slug) {
-  const { data } = await api.get(`/products/${encodeURIComponent(slug)}`)
-  const product = data?.product || data?.data || data
-  return product ? normalizeProduct(product) : null
+  if (!slug) return null
+  const cleanSlug = String(slug).trim()
+
+  // 1. Try direct API endpoint
+  try {
+    const { data } = await api.get(`/products/${encodeURIComponent(cleanSlug)}`)
+    const raw = data?.product || data?.data || data
+    if (raw && (raw.name || raw._id || raw.id)) {
+      return normalizeProduct(raw)
+    }
+  } catch (err) {
+    console.warn(`Direct fetch by slug failed for ${cleanSlug}:`, err?.message || err)
+  }
+
+  // 2. Fallback: search in list of products by slug, id, _id or slugified name
+  try {
+    const products = await fetchProducts()
+    const target = cleanSlug.toLowerCase()
+    const match = products.find((p) => {
+      const pSlug = String(p.slug || '').toLowerCase()
+      const pId = String(p.id || p._id || '').toLowerCase()
+      const pName = String(p.name || '').toLowerCase()
+      const slugified = slugifyName(pName)
+
+      return (
+        pSlug === target ||
+        pId === target ||
+        slugified === target ||
+        pName === target
+      )
+    })
+    if (match) return normalizeProduct(match)
+  } catch (err) {
+    console.error(`Fallback product lookup failed for ${cleanSlug}:`, err)
+  }
+
+  return null
 }
 
 export async function fetchFeaturedProducts(limit = 6) {

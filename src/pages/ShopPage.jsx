@@ -31,99 +31,188 @@ function ShopPage() {
   const [search, setSearch] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [selectedConcerns, setSelectedConcerns] = useState([]);
+  const [selectedRating, setSelectedRating] = useState("");
   const [sortBy, setSortBy] = useState("featured");
-  const [products, setProducts] = useState([])
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
-  const location = useLocation()
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const location = useLocation();
 
   useEffect(() => {
-    let mounted = true
-    setLoading(true)
-    Promise.all([fetchProducts().catch((e) => { setError('Failed to load products'); return [] }), fetchCategories().catch(() => [])])
+    let mounted = true;
+    setLoading(true);
+    Promise.all([
+      fetchProducts().catch((e) => {
+        setError('Failed to load products');
+        return [];
+      }),
+      fetchCategories().catch(() => []),
+    ])
       .then(([prods, cats]) => {
-        if (!mounted) return
-        setProducts(prods || [])
-        setCategories(cats || [])
+        if (!mounted) return;
+        setProducts(prods || []);
+        setCategories(cats || []);
 
         // preselect category from query param if present
-        const params = new URLSearchParams(location.search)
-        const qcat = params.get('category') || params.get('categories')
+        const params = new URLSearchParams(location.search);
+        const qcat = params.get('category') || params.get('categories');
         if (qcat) {
-          const normalized = qcat.replace(/[-_]/g, ' ').toLowerCase()
-          const match = (cats || []).find(c => (c.slug || c.name || '').toLowerCase() === (qcat || '').toLowerCase() || (c.name||'').toLowerCase() === normalized)
-          if (match) setSelectedCategories([match.name || match.title || match.slug])
+          const normalized = qcat.replace(/[-_]/g, ' ').toLowerCase().trim();
+          const match = (cats || []).find(
+            (c) =>
+              (c.slug || '').toLowerCase() === qcat.toLowerCase() ||
+              (c.name || '').toLowerCase().trim() === normalized ||
+              (c.title || '').toLowerCase().trim() === normalized
+          );
+          if (match) {
+            setSelectedCategories([match.name || match.title || match.slug]);
+          } else {
+            // capitalise for display
+            const formatted = qcat.charAt(0).toUpperCase() + qcat.slice(1);
+            setSelectedCategories([formatted]);
+          }
         }
 
-        const qbrand = params.get('brand')
-        if (qbrand) setSelectedBrand(qbrand)
+        const qbrand = params.get('brand');
+        if (qbrand) setSelectedBrand(qbrand);
       })
       .finally(() => {
-        if (mounted) setLoading(false)
-      })
+        if (mounted) setLoading(false);
+      });
 
-    return () => { mounted = false }
-  }, [location.search])
+    return () => {
+      mounted = false;
+    };
+  }, [location.search]);
 
   const filteredProducts = useMemo(() => {
-    let list = (products || []).slice()
+    let list = (products || []).slice();
 
     if (search.trim()) {
       const query = search.trim().toLowerCase();
-
       list = list.filter((product) => {
-        const cat = (product.category && (product.category.name || product.category)) || ''
+        const cat =
+          typeof product.category === 'object'
+            ? product.category?.name || product.category?.title || ''
+            : product.category || '';
+        const brand =
+          typeof product.brand === 'object'
+            ? product.brand?.name || product.brand?.title || ''
+            : product.brand || '';
+
         return (
           String(product.name || '').toLowerCase().includes(query) ||
-          String(cat).toLowerCase().includes(query)
-        )
-      })
+          String(cat).toLowerCase().includes(query) ||
+          String(brand).toLowerCase().includes(query)
+        );
+      });
     }
 
     if (selectedCategories.length > 0) {
-          list = list.filter((product) => {
-            const cat = (product.category && (product.category.name || product.category)) || ''
-            return selectedCategories.includes(cat)
-          })
+      const lowerCats = selectedCategories.map((c) => String(c).toLowerCase().trim());
+      list = list.filter((product) => {
+        const cat =
+          typeof product.category === 'object'
+            ? product.category?.name || product.category?.title || product.category?.slug || ''
+            : product.category || '';
+        const catLower = String(cat).toLowerCase().trim();
+        return lowerCats.some(
+          (lc) => lc === catLower || catLower.includes(lc) || lc.includes(catLower)
+        );
+      });
     }
 
     if (selectedBrand) {
-      const brandQuery = selectedBrand.toLowerCase().replace(/[-_]/g, ' ')
+      const brandQuery = selectedBrand.toLowerCase().replace(/[-_]/g, ' ').trim();
       list = list.filter((product) => {
-        const productBrand = String(product.brand || product.brandName || '').toLowerCase().replace(/[-_]/g, ' ')
-        return productBrand.includes(brandQuery) || productBrand === brandQuery
-      })
+        const productBrand = String(
+          (typeof product.brand === 'object' ? product.brand?.name : product.brand) ||
+            product.brandName ||
+            ''
+        )
+          .toLowerCase()
+          .replace(/[-_]/g, ' ')
+          .trim();
+        return productBrand.includes(brandQuery) || productBrand === brandQuery;
+      });
     }
 
-        if (sortBy === "price-low") {
-          list.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
-        }
+    if (minPrice !== '') {
+      const min = Number(minPrice);
+      if (!isNaN(min)) {
+        list = list.filter((product) => Number(product.price || 0) >= min);
+      }
+    }
 
-        if (sortBy === "price-high") {
-          list.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
-        }
+    if (maxPrice !== '') {
+      const max = Number(maxPrice);
+      if (!isNaN(max)) {
+        list = list.filter((product) => Number(product.price || 0) <= max);
+      }
+    }
 
-        if (sortBy === "rating") {
-          list.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
-        }
+    if (selectedRating) {
+      const minStars = selectedRating.includes('4') ? 4 : 3;
+      list = list.filter((product) => Number(product.rating || 4.5) >= minStars);
+    }
 
-        return list;
-  }, [search, selectedCategories, selectedBrand, sortBy, products]);
+    if (selectedConcerns.length > 0) {
+      list = list.filter((product) => {
+        const desc = `${product.name} ${product.description || ''} ${product.category || ''}`.toLowerCase();
+        return selectedConcerns.some((c) => desc.includes(c.toLowerCase()));
+      });
+    }
+
+    if (sortBy === 'price-low') {
+      list.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
+    } else if (sortBy === 'price-high') {
+      list.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0));
+    } else if (sortBy === 'rating') {
+      list.sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0));
+    }
+
+    return list;
+  }, [
+    search,
+    selectedCategories,
+    selectedBrand,
+    minPrice,
+    maxPrice,
+    selectedRating,
+    selectedConcerns,
+    sortBy,
+    products,
+  ]);
 
   const toggleCategory = (category) => {
     setSelectedCategories((current) =>
       current.includes(category)
         ? current.filter((item) => item !== category)
-        : [...current, category],
+        : [...current, category]
+    );
+  };
+
+  const toggleConcern = (concern) => {
+    setSelectedConcerns((current) =>
+      current.includes(concern)
+        ? current.filter((item) => item !== concern)
+        : [...current, concern]
     );
   };
 
   const clearFilters = () => {
-    setSearch("");
+    setSearch('');
     setSelectedCategories([]);
-    setSelectedBrand("");
-    setSortBy("featured");
+    setSelectedBrand('');
+    setMinPrice('');
+    setMaxPrice('');
+    setSelectedConcerns([]);
+    setSelectedRating('');
+    setSortBy('featured');
   };
 
   const filterContent = (
@@ -154,41 +243,45 @@ function ShopPage() {
         <h3>Categories</h3>
 
         <div className={styles.checkboxList}>
-        {categories.map((category) => {
-          const categoryName = category.name || category.title || category.slug || ''
-          const categoryKey = category._id || category.id || category.slug || categoryName
-          return (
-            <label key={categoryKey}>
-              <input
-                type="checkbox"
-                checked={selectedCategories.includes(categoryName)}
-                onChange={() => toggleCategory(categoryName)}
-              />
+          {categories.map((category) => {
+            const categoryName = category.name || category.title || category.slug || '';
+            const categoryKey = category._id || category.id || category.slug || categoryName;
+            return (
+              <label key={categoryKey}>
+                <input
+                  type="checkbox"
+                  checked={selectedCategories.some(
+                    (sc) => sc.toLowerCase() === categoryName.toLowerCase()
+                  )}
+                  onChange={() => toggleCategory(categoryName)}
+                />
 
-              <span className={styles.customCheckbox} />
-              <span>{categoryName}</span>
-            </label>
-          )
-        })}
-      </div>
+                <span className={styles.customCheckbox} />
+                <span>{categoryName}</span>
+              </label>
+            );
+          })}
+        </div>
       </div>
 
       <div className={styles.filterGroup}>
         <h3>Price Range</h3>
 
         <div className={styles.priceInputs}>
-          <input type="number" placeholder="Min ₹" />
+          <input
+            type="number"
+            placeholder="Min ₹"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+          />
           <span>—</span>
-          <input type="number" placeholder="Max ₹" />
+          <input
+            type="number"
+            placeholder="Max ₹"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+          />
         </div>
-
-        <input
-          type="range"
-          min="0"
-          max="5000"
-          defaultValue="2500"
-          className={styles.rangeInput}
-        />
       </div>
 
       <div className={styles.filterGroup}>
@@ -197,7 +290,11 @@ function ShopPage() {
         <div className={styles.checkboxList}>
           {concerns.map((concern) => (
             <label key={concern}>
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={selectedConcerns.includes(concern)}
+                onChange={() => toggleConcern(concern)}
+              />
               <span className={styles.customCheckbox} />
               <span>{concern}</span>
             </label>
@@ -211,7 +308,13 @@ function ShopPage() {
         <div className={styles.checkboxList}>
           {ratings.map((rating) => (
             <label key={rating}>
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={selectedRating === rating}
+                onChange={() =>
+                  setSelectedRating(selectedRating === rating ? '' : rating)
+                }
+              />
               <span className={styles.customCheckbox} />
               <span>{rating}</span>
             </label>
@@ -339,7 +442,7 @@ function ShopPage() {
                 </div>
               </div>
 
-              {selectedCategories.length > 0 && (
+              {(selectedCategories.length > 0 || selectedBrand || minPrice || maxPrice || selectedRating || selectedConcerns.length > 0) && (
                 <div className={styles.activeFilters}>
                   <span>Active filters:</span>
 
@@ -359,14 +462,63 @@ function ShopPage() {
                       type="button"
                       onClick={() => setSelectedBrand("")}
                     >
-                      {selectedBrand}
+                      Brand: {selectedBrand}
                       <X size={13} />
                     </button>
                   )}
+
+                  {(minPrice || maxPrice) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMinPrice('');
+                        setMaxPrice('');
+                      }}
+                    >
+                      ₹{minPrice || '0'} - ₹{maxPrice || '5000+'}
+                      <X size={13} />
+                    </button>
+                  )}
+
+                  {selectedRating && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRating('')}
+                    >
+                      {selectedRating}
+                      <X size={13} />
+                    </button>
+                  )}
+
+                  {selectedConcerns.map((concern) => (
+                    <button
+                      key={concern}
+                      type="button"
+                      onClick={() => toggleConcern(concern)}
+                    >
+                      {concern}
+                      <X size={13} />
+                    </button>
+                  ))}
                 </div>
               )}
 
-              {filteredProducts.length > 0 ? (
+              {loading ? (
+                <div
+                  className={`${styles.productGrid} ${
+                    gridColumns === 3
+                      ? styles.threeColumns
+                      : styles.fourColumns
+                  }`}
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                    <div
+                      key={n}
+                      className="animate-pulse rounded-[18px] bg-slate-100 dark:bg-slate-800 p-4 min-h-[380px]"
+                    />
+                  ))}
+                </div>
+              ) : filteredProducts.length > 0 ? (
                 <div
                   className={`${styles.productGrid} ${
                     gridColumns === 3
@@ -375,7 +527,7 @@ function ShopPage() {
                   }`}
                 >
                   {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                    <ProductCard key={product.id || product._id || product.slug} product={product} />
                   ))}
                 </div>
               ) : (

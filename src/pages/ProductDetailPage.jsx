@@ -141,20 +141,43 @@ function ProductDetailPage() {
         if (slug) {
           const remoteProduct = await fetchProductBySlug(slug);
           if (remoteProduct && mounted) {
-            // merge with default enriched fields if missing
+            const rawImages = (Array.isArray(remoteProduct.images) && remoteProduct.images.length > 0)
+              ? remoteProduct.images
+              : (remoteProduct.gallery?.length > 0
+                ? remoteProduct.gallery
+                : (remoteProduct.image ? [remoteProduct.image] : defaultMockProduct.images));
+
+            const shadesList = Array.isArray(remoteProduct.shades) && remoteProduct.shades.length > 0
+              ? remoteProduct.shades
+              : [];
+
+            const sizesList = Array.isArray(remoteProduct.sizes) && remoteProduct.sizes.length > 0
+              ? remoteProduct.sizes
+              : [];
+
+            const cat = typeof remoteProduct.category === 'object'
+              ? (remoteProduct.category?.name || remoteProduct.category?.title || '')
+              : (remoteProduct.category || defaultMockProduct.category);
+
+            const br = typeof remoteProduct.brand === 'object'
+              ? (remoteProduct.brand?.name || '')
+              : (remoteProduct.brand || defaultMockProduct.brand);
+
             const merged = {
               ...defaultMockProduct,
               ...remoteProduct,
-              images: remoteProduct.gallery?.length ? remoteProduct.gallery : (remoteProduct.image ? [remoteProduct.image] : defaultMockProduct.images),
-              shades: remoteProduct.shades?.length ? remoteProduct.shades : defaultMockProduct.shades,
-              sizes: remoteProduct.sizes?.length ? remoteProduct.sizes : defaultMockProduct.sizes,
+              category: cat,
+              brand: br,
+              images: rawImages,
+              shades: shadesList,
+              sizes: sizesList,
               price: Number(remoteProduct.price || defaultMockProduct.price),
               oldPrice: Number(remoteProduct.oldPrice || remoteProduct.compareAtPrice || defaultMockProduct.oldPrice),
             };
             setProduct(merged);
-            setSelectedImage(merged.images[0] || defaultMockProduct.images[0]);
-            setSelectedShade(merged.shades[0] || defaultMockProduct.shades[0]);
-            setSelectedSize(merged.sizes[0] || defaultMockProduct.sizes[0]);
+            setSelectedImage(rawImages[0] || defaultMockProduct.images[0]);
+            setSelectedShade(shadesList[0] || null);
+            setSelectedSize(sizesList[0] || null);
             recordRecentlyViewed(merged);
           } else if (mounted) {
             recordRecentlyViewed(defaultMockProduct);
@@ -192,7 +215,13 @@ function ProductDetailPage() {
 
   const currentPrice = selectedSize?.price || product.price || 599;
   const currentOldPrice = selectedSize?.oldPrice || product.oldPrice || 799;
-  const discountPercentage = Math.round(((currentOldPrice - currentPrice) / currentOldPrice) * 100) || 25;
+  const discountPercentage = currentOldPrice > currentPrice
+    ? Math.round(((currentOldPrice - currentPrice) / currentOldPrice) * 100)
+    : 0;
+
+  const isStockAvailable = selectedShade
+    ? (selectedShade.stock > 0)
+    : (product.stock === undefined || product.stock > 0);
 
   const handleShadeSelect = (shade) => {
     if (shade.stock <= 0) return;
@@ -207,17 +236,22 @@ function ProductDetailPage() {
       return;
     }
 
+    const variantSuffix = selectedShade || selectedSize
+      ? ` (${[selectedShade?.name, selectedSize?.label].filter(Boolean).join(', ')})`
+      : '';
+
     const item = {
-      id: `${product.id}-${selectedShade?.name || "std"}-${selectedSize?.label || "std"}`,
-      productId: product.id,
-      name: `${product.name} (${selectedShade?.name || "Standard"}, ${selectedSize?.label || "Standard"})`,
+      id: `${product.id || product._id || product.slug}-${selectedShade?.name || "std"}-${selectedSize?.label || "std"}`,
+      productId: product.id || product._id || product.slug,
+      name: `${product.name}${variantSuffix}`,
+      slug: product.slug,
       price: currentPrice,
       originalPrice: currentOldPrice,
-      image: selectedImage || (product.images && product.images[0]),
+      image: selectedImage || (product.images && product.images[0]) || product.image,
       quantity,
       shade: selectedShade?.name,
       size: selectedSize?.label,
-      stock: selectedShade?.stock || product.stock || 10
+      stock: selectedShade?.stock || selectedSize?.stock || product.stock || 10
     };
     dispatch(addToCart(item));
     toast.success(`${product.name} added to cart!`);
@@ -241,11 +275,11 @@ function ProductDetailPage() {
     }
 
     dispatch(toggleWishlist({
-      id: product.id,
+      id: product.id || product._id || product.slug,
       name: product.name,
       slug: product.slug,
       price: currentPrice,
-      image: selectedImage || product.images[0]
+      image: selectedImage || (product.images && product.images[0]) || product.image
     }));
   };
 
@@ -474,6 +508,29 @@ function ProductDetailPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <main className={styles.page}>
+        <div className="container flex min-h-[65vh] flex-col items-center justify-center py-24 text-center">
+          <Loader2 className="animate-spin text-brand-600 mb-4" size={42} />
+          <h2 className="text-xl font-bold text-slate-800">Loading Product Details...</h2>
+          <p className="text-sm text-slate-500 mt-2">Fetching luxury formula and shade details</p>
+        </div>
+      </main>
+    );
+  }
+
+  const categoryName = typeof product.category === 'object'
+    ? (product.category?.name || product.category?.title || 'Skincare')
+    : (product.category || 'Skincare');
+
+  const brandName = typeof product.brand === 'object'
+    ? (product.brand?.name || product.brand?.title || 'NEXT CELL BEAUTY')
+    : (product.brand || 'NEXT CELL BEAUTY');
+
+  const maxStock = selectedShade?.stock ?? selectedSize?.stock ?? product.stock ?? 10;
+  const isOutOfStock = !isStockAvailable || maxStock <= 0;
+
   return (
     <main className={styles.page}>
       <ShareModal isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} product={product} />
@@ -484,7 +541,7 @@ function ProductDetailPage() {
           <span>/</span>
           <Link to="/shop">Shop</Link>
           <span>/</span>
-          <Link to={`/shop?category=${encodeURIComponent(product.category || "makeup")}`}>{product.category}</Link>
+          <Link to={`/shop?category=${encodeURIComponent(categoryName)}`}>{categoryName}</Link>
           <span>/</span>
           <strong>{product.name}</strong>
         </div>
@@ -496,9 +553,9 @@ function ProductDetailPage() {
           <div className={styles.galleryColumn}>
             <div className={styles.galleryLayout}>
               <div className={styles.thumbnailList}>
-                {(product.images || []).map((img, idx) => (
+                {(product.images || [selectedImage]).filter(Boolean).map((img, idx) => (
                   <button
-                    key={img}
+                    key={`${img}-${idx}`}
                     type="button"
                     className={`${styles.thumbnailButton} ${selectedImage === img ? styles.activeThumbnail : ""}`}
                     onClick={() => setSelectedImage(img)}
@@ -537,9 +594,9 @@ function ProductDetailPage() {
             </div>
 
             <div className={styles.mobileThumbnails}>
-              {(product.images || []).map((img, idx) => (
+              {(product.images || [selectedImage]).filter(Boolean).map((img, idx) => (
                 <button
-                  key={img}
+                  key={`${img}-${idx}`}
                   type="button"
                   className={`${styles.thumbnailButton} ${selectedImage === img ? styles.activeThumbnail : ""}`}
                   onClick={() => setSelectedImage(img)}
@@ -553,7 +610,7 @@ function ProductDetailPage() {
           {/* Info Column */}
           <div className={styles.informationColumn}>
             <div className={styles.topMetaRow}>
-              <span className={styles.brandName}>{product.brand || "NEXT CELL BEAUTY"}</span>
+              <span className={styles.brandName}>{brandName}</span>
               <div className={styles.liveViewerPill}>
                 <Flame size={14} className={styles.flameIcon} />
                 <span>{viewerCount} people viewing now</span>
@@ -588,7 +645,7 @@ function ProductDetailPage() {
             </div>
 
             {/* Shades Selection */}
-            {Array.isArray(product.shades) && product.shades.length > 0 && (
+            {Array.isArray(product.shades) && product.shades.length > 0 && selectedShade && (
               <div className={styles.optionSection}>
                 <div className={styles.optionHeader}>
                   <span>Select Shade: <strong>{selectedShade.name}</strong></span>
@@ -600,7 +657,7 @@ function ProductDetailPage() {
                     <button
                       key={shade.id || shade.name}
                       type="button"
-                      className={`${styles.shadeButton} ${selectedShade.id === shade.id ? styles.activeShade : ""} ${shade.stock <= 0 ? styles.disabledShade : ""}`}
+                      className={`${styles.shadeButton} ${selectedShade?.id === shade.id || selectedShade?.name === shade.name ? styles.activeShade : ""} ${shade.stock <= 0 ? styles.disabledShade : ""}`}
                       onClick={() => handleShadeSelect(shade)}
                       disabled={shade.stock <= 0}
                       title={shade.stock <= 0 ? `${shade.name} is Out of Stock` : shade.name}
@@ -614,7 +671,7 @@ function ProductDetailPage() {
             )}
 
             {/* Size / Variant Selection */}
-            {Array.isArray(product.sizes) && product.sizes.length > 0 && (
+            {Array.isArray(product.sizes) && product.sizes.length > 0 && selectedSize && (
               <div className={styles.optionSection}>
                 <div className={styles.optionHeader}>
                   <span>Select Size: <strong>{selectedSize.label}</strong></span>
@@ -624,11 +681,11 @@ function ProductDetailPage() {
                     <button
                       key={size.id || size.label}
                       type="button"
-                      className={`${styles.sizeBtn} ${selectedSize.id === size.id ? styles.activeSize : ""}`}
+                      className={`${styles.sizeBtn} ${selectedSize?.id === size.id || selectedSize?.label === size.label ? styles.activeSize : ""}`}
                       onClick={() => setSelectedSize(size)}
                     >
                       <strong>{size.label}</strong>
-                      <span>₹{size.price.toLocaleString("en-IN")}</span>
+                      <span>₹{Number(size.price || currentPrice).toLocaleString("en-IN")}</span>
                     </button>
                   ))}
                 </div>
@@ -638,19 +695,19 @@ function ProductDetailPage() {
             {/* Stock Availability */}
             <div className={styles.stockMessage}>
               <span />
-              {selectedShade.stock > 0
-                ? `${t("inStock")} • ${t("onlyLeft", { stock: selectedShade.stock })}`
+              {!isOutOfStock
+                ? `${t("inStock")} • ${t("onlyLeft", { stock: maxStock })}`
                 : t("outOfStock")}
             </div>
 
             {/* Purchase CTA row */}
             <div className={styles.purchaseRow}>
               <div className={styles.quantitySelector}>
-                <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} disabled={quantity <= 1}>
+                <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} disabled={quantity <= 1 || isOutOfStock}>
                   <Minus size={17} />
                 </button>
                 <span>{quantity}</span>
-                <button type="button" onClick={() => setQuantity((q) => Math.min(selectedShade.stock || 10, q + 1))} disabled={quantity >= (selectedShade.stock || 10)}>
+                <button type="button" onClick={() => setQuantity((q) => Math.min(maxStock, q + 1))} disabled={quantity >= maxStock || isOutOfStock}>
                   <Plus size={17} />
                 </button>
               </div>
@@ -659,17 +716,17 @@ function ProductDetailPage() {
                 type="button"
                 className={styles.addToCartButton}
                 onClick={handleAddToCart}
-                disabled={selectedShade.stock <= 0}
+                disabled={isOutOfStock}
               >
                 <ShoppingBag size={20} />
-                {selectedShade.stock <= 0 ? t("outOfStock") : t("addToCart")}
+                {isOutOfStock ? t("outOfStock") : t("addToCart")}
               </button>
 
               <button
                 type="button"
                 className={styles.buyNowButton}
                 onClick={handleBuyNow}
-                disabled={selectedShade.stock <= 0}
+                disabled={isOutOfStock}
               >
                 <Zap size={20} />
                 {t("buyNow")}
@@ -774,19 +831,23 @@ function ProductDetailPage() {
               <h2>You May Also Like</h2>
             </div>
             <div className={styles.relatedGrid}>
-              {relatedProducts.map((rel) => (
-                <div key={rel.id || rel.slug} className={styles.relatedCard}>
-                  <Link to={`/product/${rel.slug}`} className={styles.relatedImgBox}>
-                    <img src={rel.image} alt={rel.name} loading="lazy" />
-                  </Link>
-                  <div className={styles.relatedInfo}>
-                    <span className={styles.relCat}>{rel.category}</span>
-                    <Link to={`/product/${rel.slug}`} className={styles.relTitle}>{rel.name}</Link>
-                    <div className={styles.relPrice}>₹{Number(rel.price).toLocaleString("en-IN")}</div>
-                    <Link to={`/product/${rel.slug}`} className={styles.relBtn}>View Details</Link>
+              {relatedProducts.map((rel) => {
+                const relSlug = rel.slug || rel._id || rel.id;
+                const relCat = typeof rel.category === 'object' ? (rel.category?.name || '') : (rel.category || '');
+                return (
+                  <div key={rel.id || rel._id || relSlug} className={styles.relatedCard}>
+                    <Link to={`/product/${relSlug}`} className={styles.relatedImgBox}>
+                      <img src={rel.image || (rel.images && rel.images[0])} alt={rel.name} loading="lazy" />
+                    </Link>
+                    <div className={styles.relatedInfo}>
+                      {relCat && <span className={styles.relCat}>{relCat}</span>}
+                      <Link to={`/product/${relSlug}`} className={styles.relTitle}>{rel.name}</Link>
+                      <div className={styles.relPrice}>₹{Number(rel.price).toLocaleString("en-IN")}</div>
+                      <Link to={`/product/${relSlug}`} className={styles.relBtn}>View Details</Link>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -796,13 +857,13 @@ function ProductDetailPage() {
       <div className={styles.mobilePurchaseBar}>
         <div>
           <span>₹{currentPrice.toLocaleString("en-IN")}</span>
-          <small>{selectedShade.name}</small>
+          <small>{selectedShade?.name || selectedSize?.label || brandName}</small>
         </div>
-        <button type="button" onClick={handleAddToCart} disabled={selectedShade.stock <= 0}>
+        <button type="button" onClick={handleAddToCart} disabled={isOutOfStock}>
           <ShoppingBag size={18} />
           Add to Cart
         </button>
-        <button type="button" onClick={handleBuyNow} disabled={selectedShade.stock <= 0}>
+        <button type="button" onClick={handleBuyNow} disabled={isOutOfStock}>
           Buy Now
         </button>
       </div>
