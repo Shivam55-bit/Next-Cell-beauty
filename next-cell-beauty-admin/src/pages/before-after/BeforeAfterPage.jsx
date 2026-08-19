@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { Plus, Edit2, Trash2, Power, MoveHorizontal, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Plus, Edit2, Trash2, Power, MoveHorizontal, Upload, X, Image as ImageIcon } from "lucide-react";
 
+import { apiClient } from "../../services/apiClient";
 import { beforeAfterService } from "../../services/beforeAfterService";
 import DataTable from "../../components/common/DataTable";
 import StatusBadge from "../../components/common/StatusBadge";
@@ -14,10 +15,10 @@ const INITIAL_FORM = {
   title: "",
   category: "Skincare Transformation",
   period: "After 2 Weeks of Daily Use",
-  beforeImage: "https://images.unsplash.com/photo-1512290900672-1f55b9e075fa?auto=format&fit=crop&w=800&q=80",
-  afterImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
-  beforeLabel: "Before (Dull & Dry)",
-  afterLabel: "After (Radiant Glow)",
+  beforeImage: "",
+  afterImage: "",
+  beforeLabel: "Before",
+  afterLabel: "After",
   status: "Active",
   order: 1
 };
@@ -34,6 +35,16 @@ export default function BeforeAfterPage() {
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [toast, setToast] = useState({ message: "", type: "success" });
 
+  const [beforeFile, setBeforeFile] = useState(null);
+  const [afterFile, setAfterFile] = useState(null);
+  const [beforePreview, setBeforePreview] = useState("");
+  const [afterPreview, setAfterPreview] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  const beforeInputRef = useRef(null);
+  const afterInputRef = useRef(null);
+
   const loadData = async () => {
     setLoading(true);
     const res = await beforeAfterService.getAll();
@@ -48,12 +59,22 @@ export default function BeforeAfterPage() {
   const handleOpenAdd = () => {
     setEditingId(null);
     setFormData(INITIAL_FORM);
+    setBeforeFile(null);
+    setAfterFile(null);
+    setBeforePreview("");
+    setAfterPreview("");
+    setUploadError("");
     setIsFormOpen(true);
   };
 
   const handleOpenEdit = (item) => {
     setEditingId(item.id);
     setFormData(item);
+    setBeforeFile(null);
+    setAfterFile(null);
+    setBeforePreview("");
+    setAfterPreview("");
+    setUploadError("");
     setIsFormOpen(true);
   };
 
@@ -71,23 +92,125 @@ export default function BeforeAfterPage() {
     }
   };
 
+  const handleBeforeSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!allowed.includes(file.type)) {
+      setUploadError("Only JPG, JPEG, PNG and WEBP image files are supported.");
+      return;
+    }
+    setBeforeFile(file);
+    setBeforePreview(URL.createObjectURL(file));
+    setUploadError("");
+  };
+
+  const handleAfterSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!allowed.includes(file.type)) {
+      setUploadError("Only JPG, JPEG, PNG and WEBP image files are supported.");
+      return;
+    }
+    setAfterFile(file);
+    setAfterPreview(URL.createObjectURL(file));
+    setUploadError("");
+  };
+
+  const handleRemoveBefore = () => {
+    setBeforeFile(null);
+    setBeforePreview("");
+    setFormData((prev) => ({ ...prev, beforeImage: "" }));
+    if (beforeInputRef.current) beforeInputRef.current.value = "";
+  };
+
+  const handleRemoveAfter = () => {
+    setAfterFile(null);
+    setAfterPreview("");
+    setFormData((prev) => ({ ...prev, afterImage: "" }));
+    if (afterInputRef.current) afterInputRef.current.value = "";
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    const payload = {
-      ...formData,
-      order: Number(formData.order || 0)
-    };
+    setUploadError("");
 
-    if (editingId) {
-      await beforeAfterService.update(editingId, payload);
-      setToast({ message: "Before/After item updated successfully", type: "success" });
-    } else {
-      await beforeAfterService.create(payload);
-      setToast({ message: "Before/After item created successfully", type: "success" });
+    let beforeImageUrl = formData.beforeImage;
+    let afterImageUrl = formData.afterImage;
+    const apiBase = apiClient.getApiBaseUrl();
+    const authHeaders = apiClient.getAuthHeaders();
+
+    if (!beforeFile && !beforeImageUrl) {
+      setUploadError("Please upload a 'Before' image.");
+      return;
+    }
+    if (!afterFile && !afterImageUrl) {
+      setUploadError("Please upload an 'After' image.");
+      return;
     }
 
-    setIsFormOpen(false);
-    loadData();
+    setUploading(true);
+
+    try {
+      if (beforeFile) {
+        const payload = new FormData();
+        payload.append("file", beforeFile);
+        const res = await fetch(`${apiBase}/admin/upload`, {
+          method: "POST",
+          headers: { ...authHeaders },
+          body: payload
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          setUploadError(errData.message || "Failed to upload 'Before' image.");
+          setUploading(false);
+          return;
+        }
+        const json = await res.json();
+        if (json?.data?.url) beforeImageUrl = json.data.url;
+      }
+
+      if (afterFile) {
+        const payload = new FormData();
+        payload.append("file", afterFile);
+        const res = await fetch(`${apiBase}/admin/upload`, {
+          method: "POST",
+          headers: { ...authHeaders },
+          body: payload
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          setUploadError(errData.message || "Failed to upload 'After' image.");
+          setUploading(false);
+          return;
+        }
+        const json = await res.json();
+        if (json?.data?.url) afterImageUrl = json.data.url;
+      }
+
+      const finalPayload = {
+        ...formData,
+        beforeImage: beforeImageUrl,
+        afterImage: afterImageUrl,
+        order: Number(formData.order || 0)
+      };
+
+      if (editingId) {
+        await beforeAfterService.update(editingId, finalPayload);
+        setToast({ message: "Before & After comparison updated successfully", type: "success" });
+      } else {
+        await beforeAfterService.create(finalPayload);
+        setToast({ message: "Before & After comparison created successfully", type: "success" });
+      }
+
+      setIsFormOpen(false);
+      loadData();
+    } catch (err) {
+      setUploadError("An error occurred while uploading. Please try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const columns = [
@@ -100,18 +223,18 @@ export default function BeforeAfterPage() {
             <img
               src={row.beforeImage}
               alt="Before"
-              style={{ width: 44, height: 44, borderRadius: 6, objectFit: "cover" }}
+              style={{ width: 48, height: 48, borderRadius: 8, objectFit: "cover" }}
             />
-            <div style={{ fontSize: 9, color: "#64748b" }}>Before</div>
+            <div style={{ fontSize: 9, color: "#64748b" }}>{row.beforeLabel || "Before"}</div>
           </div>
           <MoveHorizontal size={14} color="#94a3b8" />
           <div style={{ textAlign: "center" }}>
             <img
               src={row.afterImage}
               alt="After"
-              style={{ width: 44, height: 44, borderRadius: 6, objectFit: "cover" }}
+              style={{ width: 48, height: 48, borderRadius: 8, objectFit: "cover" }}
             />
-            <div style={{ fontSize: 9, color: "var(--admin-green)", fontWeight: 700 }}>After</div>
+            <div style={{ fontSize: 9, color: "var(--admin-green)", fontWeight: 700 }}>{row.afterLabel || "After"}</div>
           </div>
         </div>
       )
@@ -190,7 +313,7 @@ export default function BeforeAfterPage() {
       <div className={styles.headerBar}>
         <div>
           <h2>Real Results: Before & After Management</h2>
-          <p>Add and edit before/after transformation slides displayed on the storefront comparison slider.</p>
+          <p>Upload and manage before/after transformation slides displayed on the storefront slider.</p>
         </div>
         <button type="button" className={styles.addBtn} onClick={handleOpenAdd}>
           <Plus size={16} />
@@ -202,7 +325,7 @@ export default function BeforeAfterPage() {
         columns={columns}
         data={items}
         loading={loading}
-        emptyMessage="No comparison items found. Click 'Add Before & After Slide' to create one."
+        emptyMessage="No comparison items found. Click 'Add Before & After Slide' to upload one."
       />
 
       {/* Add / Edit Modal */}
@@ -212,6 +335,12 @@ export default function BeforeAfterPage() {
         title={editingId ? "Edit Before & After Comparison" : "Add Before & After Slide"}
       >
         <form onSubmit={handleFormSubmit} className={styles.formGrid}>
+          {uploadError && (
+            <div className={styles.fullWidth} style={{ padding: "8px 12px", background: "#fef2f2", color: "#b91c1c", borderRadius: 8, fontSize: 12, border: "1px solid #fecaca" }}>
+              {uploadError}
+            </div>
+          )}
+
           <div className={`${styles.formGroup} ${styles.fullWidth}`}>
             <label>Treatment / Product Title *</label>
             <input
@@ -243,26 +372,124 @@ export default function BeforeAfterPage() {
             />
           </div>
 
+          {/* Before Image Upload */}
           <div className={styles.formGroup}>
-            <label>Before Image URL *</label>
+            <label>Before Image (Upload File) *</label>
             <input
-              type="url"
-              required
-              placeholder="https://images.unsplash.com/..."
-              value={formData.beforeImage}
-              onChange={(e) => setFormData({ ...formData, beforeImage: e.target.value })}
+              ref={beforeInputRef}
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              style={{ display: "none" }}
+              onChange={handleBeforeSelect}
             />
+            <button
+              type="button"
+              onClick={() => beforeInputRef.current && beforeInputRef.current.click()}
+              style={{
+                width: "100%",
+                border: "1px dashed var(--admin-border)",
+                borderRadius: "8px",
+                background: "#f8fafc",
+                color: "var(--admin-heading)",
+                padding: "12px",
+                textAlign: "center",
+                fontSize: "13px",
+                fontWeight: 600,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6
+              }}
+            >
+              <Upload size={16} />
+              {beforePreview || formData.beforeImage ? "Change Before Image" : "Upload Before Image"}
+            </button>
+            {(beforePreview || formData.beforeImage) && (
+              <div style={{ marginTop: "8px", position: "relative", textAlign: "center" }}>
+                <img
+                  src={beforePreview || formData.beforeImage}
+                  alt="Before preview"
+                  style={{ width: "100%", maxHeight: "140px", objectFit: "cover", borderRadius: "8px", border: "1px solid var(--admin-border)" }}
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveBefore}
+                  style={{
+                    marginTop: "4px",
+                    border: "1px solid var(--admin-border)",
+                    borderRadius: "6px",
+                    background: "#fff",
+                    color: "var(--admin-danger)",
+                    padding: "4px 8px",
+                    fontSize: "11px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Remove Before Image
+                </button>
+              </div>
+            )}
           </div>
 
+          {/* After Image Upload */}
           <div className={styles.formGroup}>
-            <label>After Image URL *</label>
+            <label>After Image (Upload File) *</label>
             <input
-              type="url"
-              required
-              placeholder="https://images.unsplash.com/..."
-              value={formData.afterImage}
-              onChange={(e) => setFormData({ ...formData, afterImage: e.target.value })}
+              ref={afterInputRef}
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              style={{ display: "none" }}
+              onChange={handleAfterSelect}
             />
+            <button
+              type="button"
+              onClick={() => afterInputRef.current && afterInputRef.current.click()}
+              style={{
+                width: "100%",
+                border: "1px dashed var(--admin-border)",
+                borderRadius: "8px",
+                background: "#f8fafc",
+                color: "var(--admin-heading)",
+                padding: "12px",
+                textAlign: "center",
+                fontSize: "13px",
+                fontWeight: 600,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6
+              }}
+            >
+              <Upload size={16} />
+              {afterPreview || formData.afterImage ? "Change After Image" : "Upload After Image"}
+            </button>
+            {(afterPreview || formData.afterImage) && (
+              <div style={{ marginTop: "8px", position: "relative", textAlign: "center" }}>
+                <img
+                  src={afterPreview || formData.afterImage}
+                  alt="After preview"
+                  style={{ width: "100%", maxHeight: "140px", objectFit: "cover", borderRadius: "8px", border: "1px solid var(--admin-border)" }}
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveAfter}
+                  style={{
+                    marginTop: "4px",
+                    border: "1px solid var(--admin-border)",
+                    borderRadius: "6px",
+                    background: "#fff",
+                    color: "var(--admin-danger)",
+                    padding: "4px 8px",
+                    fontSize: "11px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Remove After Image
+                </button>
+              </div>
+            )}
           </div>
 
           <div className={styles.formGroup}>
@@ -317,11 +544,12 @@ export default function BeforeAfterPage() {
               type="button"
               className={styles.cancelBtn}
               onClick={() => setIsFormOpen(false)}
+              disabled={uploading}
             >
               Cancel
             </button>
-            <button type="submit" className={styles.saveBtn}>
-              {editingId ? "Save Changes" : "Create Comparison"}
+            <button type="submit" className={styles.saveBtn} disabled={uploading}>
+              {uploading ? "Uploading Images..." : (editingId ? "Save Changes" : "Create Comparison")}
             </button>
           </div>
         </form>

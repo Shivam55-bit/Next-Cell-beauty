@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { Plus, Edit2, Trash2, Power, Flame, ShoppingBag } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Plus, Edit2, Trash2, Power, Upload, ShoppingBag } from "lucide-react";
 
+import { apiClient } from "../../services/apiClient";
 import { comboService } from "../../services/comboService";
 import DataTable from "../../components/common/DataTable";
 import StatusBadge from "../../components/common/StatusBadge";
@@ -17,7 +18,7 @@ const INITIAL_FORM = {
   originalPrice: 1999,
   bundlePrice: 1299,
   savings: 700,
-  image: "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=800&q=80",
+  image: "",
   description: "",
   items: "Vitamin C Serum (30ml)\nMoisture Day Cream (50g)\nFree Velvet Beauty Pouch",
   status: "Active",
@@ -36,6 +37,13 @@ export default function ComboDealsPage() {
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [toast, setToast] = useState({ message: "", type: "success" });
 
+  const [bundleFile, setBundleFile] = useState(null);
+  const [bundlePreview, setBundlePreview] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+
+  const imageInputRef = useRef(null);
+
   const loadCombos = async () => {
     setLoading(true);
     const res = await comboService.getAll();
@@ -50,6 +58,9 @@ export default function ComboDealsPage() {
   const handleOpenAdd = () => {
     setEditingId(null);
     setFormData(INITIAL_FORM);
+    setBundleFile(null);
+    setBundlePreview("");
+    setUploadError("");
     setIsFormOpen(true);
   };
 
@@ -59,6 +70,9 @@ export default function ComboDealsPage() {
       ...c,
       items: Array.isArray(c.items) ? c.items.join("\n") : (c.items || "")
     });
+    setBundleFile(null);
+    setBundlePreview("");
+    setUploadError("");
     setIsFormOpen(true);
   };
 
@@ -76,27 +90,85 @@ export default function ComboDealsPage() {
     }
   };
 
+  const handleImageSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    if (!allowed.includes(file.type)) {
+      setUploadError("Only JPG, JPEG, PNG and WEBP image files are supported.");
+      return;
+    }
+    setBundleFile(file);
+    setBundlePreview(URL.createObjectURL(file));
+    setUploadError("");
+  };
+
+  const handleRemoveImage = () => {
+    setBundleFile(null);
+    setBundlePreview("");
+    setFormData((prev) => ({ ...prev, image: "" }));
+    if (imageInputRef.current) imageInputRef.current.value = "";
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    const payload = {
-      ...formData,
-      originalPrice: Number(formData.originalPrice),
-      bundlePrice: Number(formData.bundlePrice),
-      savings: Number(formData.originalPrice) - Number(formData.bundlePrice),
-      order: Number(formData.order || 0),
-      items: typeof formData.items === "string" ? formData.items.split("\n").map((s) => s.trim()).filter(Boolean) : formData.items
-    };
+    setUploadError("");
 
-    if (editingId) {
-      await comboService.update(editingId, payload);
-      setToast({ message: "Combo deal updated successfully", type: "success" });
-    } else {
-      await comboService.create(payload);
-      setToast({ message: "Combo deal created successfully", type: "success" });
+    let imageUrl = formData.image;
+    const apiBase = apiClient.getApiBaseUrl();
+    const authHeaders = apiClient.getAuthHeaders();
+
+    if (!bundleFile && !imageUrl) {
+      setUploadError("Please upload a bundle image.");
+      return;
     }
 
-    setIsFormOpen(false);
-    loadCombos();
+    setUploading(true);
+
+    try {
+      if (bundleFile) {
+        const payload = new FormData();
+        payload.append("file", bundleFile);
+        const res = await fetch(`${apiBase}/admin/upload`, {
+          method: "POST",
+          headers: { ...authHeaders },
+          body: payload
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          setUploadError(errData.message || "Failed to upload bundle image.");
+          setUploading(false);
+          return;
+        }
+        const json = await res.json();
+        if (json?.data?.url) imageUrl = json.data.url;
+      }
+
+      const finalPayload = {
+        ...formData,
+        image: imageUrl,
+        originalPrice: Number(formData.originalPrice),
+        bundlePrice: Number(formData.bundlePrice),
+        savings: Number(formData.originalPrice) - Number(formData.bundlePrice),
+        order: Number(formData.order || 0),
+        items: typeof formData.items === "string" ? formData.items.split("\n").map((s) => s.trim()).filter(Boolean) : formData.items
+      };
+
+      if (editingId) {
+        await comboService.update(editingId, finalPayload);
+        setToast({ message: "Combo deal updated successfully", type: "success" });
+      } else {
+        await comboService.create(finalPayload);
+        setToast({ message: "Combo deal created successfully", type: "success" });
+      }
+
+      setIsFormOpen(false);
+      loadCombos();
+    } catch (err) {
+      setUploadError("An error occurred while uploading image. Please try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const columns = [
@@ -198,7 +270,7 @@ export default function ComboDealsPage() {
       <div className={styles.headerBar}>
         <div>
           <h2>Combo Deals & Bundles Management</h2>
-          <p>Create and manage value beauty kits with special discount pricing on the storefront.</p>
+          <p>Upload and manage value beauty kits with special discount pricing on the storefront.</p>
         </div>
         <button type="button" className={styles.addBtn} onClick={handleOpenAdd}>
           <Plus size={16} />
@@ -210,7 +282,7 @@ export default function ComboDealsPage() {
         columns={columns}
         data={combos}
         loading={loading}
-        emptyMessage="No combo deals found. Click 'Add New Combo Deal' to create one."
+        emptyMessage="No combo deals found. Click 'Add New Combo Deal' to upload one."
       />
 
       {/* Add / Edit Modal */}
@@ -220,6 +292,12 @@ export default function ComboDealsPage() {
         title={editingId ? "Edit Combo Deal" : "Add New Combo Deal"}
       >
         <form onSubmit={handleFormSubmit} className={styles.formGrid}>
+          {uploadError && (
+            <div className={styles.fullWidth} style={{ padding: "8px 12px", background: "#fef2f2", color: "#b91c1c", borderRadius: 8, fontSize: 12, border: "1px solid #fecaca" }}>
+              {uploadError}
+            </div>
+          )}
+
           <div className={`${styles.formGroup} ${styles.fullWidth}`}>
             <label>Bundle Name *</label>
             <input
@@ -273,15 +351,64 @@ export default function ComboDealsPage() {
             />
           </div>
 
+          {/* Bundle Image Upload */}
           <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-            <label>Bundle Image URL *</label>
+            <label>Bundle Image (Upload File) *</label>
             <input
-              type="url"
-              required
-              placeholder="https://images.unsplash.com/..."
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+              ref={imageInputRef}
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              style={{ display: "none" }}
+              onChange={handleImageSelect}
             />
+            <button
+              type="button"
+              onClick={() => imageInputRef.current && imageInputRef.current.click()}
+              style={{
+                width: "100%",
+                border: "1px dashed var(--admin-border)",
+                borderRadius: "8px",
+                background: "#f8fafc",
+                color: "var(--admin-heading)",
+                padding: "12px",
+                textAlign: "center",
+                fontSize: "13px",
+                fontWeight: 600,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6
+              }}
+            >
+              <Upload size={16} />
+              {bundlePreview || formData.image ? "Change Bundle Image" : "Upload Bundle Image"}
+            </button>
+            {(bundlePreview || formData.image) && (
+              <div style={{ marginTop: "8px", textAlign: "center" }}>
+                <img
+                  src={bundlePreview || formData.image}
+                  alt="Bundle preview"
+                  style={{ width: "100%", maxHeight: "160px", objectFit: "cover", borderRadius: "8px", border: "1px solid var(--admin-border)" }}
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  style={{
+                    marginTop: "4px",
+                    border: "1px solid var(--admin-border)",
+                    borderRadius: "6px",
+                    background: "#fff",
+                    color: "var(--admin-danger)",
+                    padding: "4px 8px",
+                    fontSize: "11px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Remove Image
+                </button>
+              </div>
+            )}
           </div>
 
           <div className={`${styles.formGroup} ${styles.fullWidth}`}>
@@ -344,11 +471,12 @@ export default function ComboDealsPage() {
               type="button"
               className={styles.cancelBtn}
               onClick={() => setIsFormOpen(false)}
+              disabled={uploading}
             >
               Cancel
             </button>
-            <button type="submit" className={styles.saveBtn}>
-              {editingId ? "Save Changes" : "Create Combo Deal"}
+            <button type="submit" className={styles.saveBtn} disabled={uploading}>
+              {uploading ? "Uploading Image..." : (editingId ? "Save Changes" : "Create Combo Deal")}
             </button>
           </div>
         </form>
