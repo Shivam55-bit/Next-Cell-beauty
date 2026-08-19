@@ -1,6 +1,16 @@
 import axios from 'axios'
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+const getBaseUrl = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL
+  }
+  if (typeof window !== 'undefined' && window.location.hostname.includes('onrender.com')) {
+    return 'https://next-cell-beauty-backend.onrender.com/api'
+  }
+  return '/api'
+}
+
+export const API_BASE_URL = getBaseUrl()
 
 const client = axios.create({
   baseURL: API_BASE_URL,

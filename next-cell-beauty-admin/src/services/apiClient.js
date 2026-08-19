@@ -1,6 +1,16 @@
 // Central API Client for Admin Panel
-const DEFAULT_API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:4001/api";
-const API_BASE_URL = DEFAULT_API_BASE_URL;
+const getBaseUrl = () => {
+  if (import.meta.env?.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  if (typeof window !== 'undefined' && window.location.hostname.includes('onrender.com')) {
+    return 'https://next-cell-beauty-backend.onrender.com/api';
+  }
+  return 'http://localhost:4001/api';
+};
+
+const API_BASE_URL = getBaseUrl();
+
 
 export const apiClient = {
   getApiBaseUrl() {
