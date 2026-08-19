@@ -110,6 +110,10 @@ function CategorySection() {
     el.scrollBy({ left: cardWidth + gap, behavior: "smooth" });
   };
 
+  if (!loading && categories.length === 0) {
+    return null;
+  }
+
   return (
     <section className={`section ${styles.categorySection}`}>
       <div className="container">

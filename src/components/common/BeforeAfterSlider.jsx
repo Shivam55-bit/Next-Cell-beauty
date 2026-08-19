@@ -3,33 +3,9 @@ import { Sparkles, MoveHorizontal } from "lucide-react";
 import api from "../../services/api.js";
 import styles from "./BeforeAfterSlider.module.css";
 
-const defaultComparisons = [
-  {
-    id: 1,
-    title: "HydraGlow Skin Serum Results",
-    category: "Skincare Transformation",
-    period: "After 2 Weeks of Daily Use",
-    beforeImage: "https://images.unsplash.com/photo-1512290900672-1f55b9e075fa?auto=format&fit=crop&w=800&q=80",
-    afterImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
-    beforeLabel: "Before (Dull & Dry)",
-    afterLabel: "After (Radiant Glow)",
-    status: "Active"
-  },
-  {
-    id: 2,
-    title: "Velvet Matte Poreless Foundation",
-    category: "Makeup Perfection",
-    period: "Instant Application Result",
-    beforeImage: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=800&q=80",
-    afterImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
-    beforeLabel: "Bare Skin",
-    afterLabel: "Flawless Finish",
-    status: "Active"
-  }
-];
-
 export default function BeforeAfterSlider({ comparisons: initialComparisons }) {
-  const [comparisons, setComparisons] = useState(initialComparisons || defaultComparisons);
+  const [comparisons, setComparisons] = useState(initialComparisons || []);
+  const [loading, setLoading] = useState(!initialComparisons);
   const [activeIndex, setActiveIndex] = useState(0);
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
@@ -41,19 +17,35 @@ export default function BeforeAfterSlider({ comparisons: initialComparisons }) {
       try {
         const res = await api.get("/before-after");
         const list = Array.isArray(res.data?.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []);
-        const activeList = list.filter((item) => item.status === "Active" || item.status === "ACTIVE");
-        if (mounted && activeList.length > 0) {
+        const activeList = list.filter((item) => (item.status === "Active" || item.status === "ACTIVE") && item.beforeImage && item.afterImage);
+        if (mounted) {
           setComparisons(activeList);
         }
       } catch (err) {
-        // Fallback to defaults
+        if (mounted) setComparisons([]);
+      } finally {
+        if (mounted) setLoading(false);
       }
     };
-    loadBeforeAfter();
-    return () => { mounted = false; };
-  }, []);
 
-  const activeData = comparisons[activeIndex] || comparisons[0] || defaultComparisons[0];
+    if (!initialComparisons) {
+      loadBeforeAfter();
+    } else {
+      setLoading(false);
+    }
+
+    return () => { mounted = false; };
+  }, [initialComparisons]);
+
+  // If loading or no active comparisons in database, do not render section
+  if (loading || comparisons.length === 0) {
+    return null;
+  }
+
+  const activeData = comparisons[activeIndex] || comparisons[0];
+  if (!activeData || !activeData.beforeImage || !activeData.afterImage) {
+    return null;
+  }
 
   const handleMove = useCallback((clientX) => {
     if (!containerRef.current) return;
@@ -94,7 +86,7 @@ export default function BeforeAfterSlider({ comparisons: initialComparisons }) {
           <div className={styles.tabButtons}>
             {comparisons.map((item, idx) => (
               <button
-                key={item.id || idx}
+                key={item.id || item._id || idx}
                 type="button"
                 className={`${styles.tabBtn} ${activeIndex === idx ? styles.activeTab : ""}`}
                 onClick={() => {
@@ -121,7 +113,7 @@ export default function BeforeAfterSlider({ comparisons: initialComparisons }) {
             {/* After Image (Background) */}
             <img
               src={activeData.afterImage}
-              alt={activeData.afterLabel}
+              alt={activeData.afterLabel || "After"}
               className={styles.imageLayer}
             />
             <span className={styles.afterBadge}>{activeData.afterLabel || "After"}</span>
@@ -133,7 +125,7 @@ export default function BeforeAfterSlider({ comparisons: initialComparisons }) {
             >
               <img
                 src={activeData.beforeImage}
-                alt={activeData.beforeLabel}
+                alt={activeData.beforeLabel || "Before"}
                 className={styles.imageLayer}
               />
               <span className={styles.beforeBadge}>{activeData.beforeLabel || "Before"}</span>

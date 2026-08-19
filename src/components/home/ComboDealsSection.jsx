@@ -8,62 +8,9 @@ import api from "../../services/api.js";
 import toast from "react-hot-toast";
 import styles from "./ComboDealsSection.module.css";
 
-const defaultBundles = [
-  {
-    id: "bundle-glow-duo",
-    name: "Complete Radiant Glow Combo",
-    badge: "Save 35%",
-    tag: "Bestseller Bundle",
-    originalPrice: 1998,
-    bundlePrice: 1299,
-    savings: 699,
-    image: "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=800&q=80",
-    description: "HydraGlow Vitamin C Serum + Rosehip Day Cream for maximum glass-skin radiance.",
-    items: [
-      "Vitamin C Illuminating Face Serum (30ml)",
-      "HydraGlow Moisture Day Cream (50g)",
-      "Free Velvet Beauty Pouch"
-    ],
-    status: "Active"
-  },
-  {
-    id: "bundle-matte-lip-trio",
-    name: "Velvet Matte Lip Trio Box",
-    badge: "Save 40%",
-    tag: "Limited Edition",
-    originalPrice: 2397,
-    bundlePrice: 1449,
-    savings: 948,
-    image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=800&q=80",
-    description: "3 iconic shades (Rose Nude, Ruby Red, Berry Plum) in ultra-matte non-drying finish.",
-    items: [
-      "Velvet Liquid Lipstick - Rose Nude",
-      "Velvet Liquid Lipstick - Ruby Red",
-      "Velvet Liquid Lipstick - Berry Plum"
-    ],
-    status: "Active"
-  },
-  {
-    id: "bundle-night-repair-kit",
-    name: "Overnight Intensive Repair Kit",
-    badge: "Save 30%",
-    tag: "Dermatologist Recommended",
-    originalPrice: 2899,
-    bundlePrice: 1999,
-    savings: 900,
-    image: "https://images.unsplash.com/photo-1608248597359-28c049615a6b?auto=format&fit=crop&w=800&q=80",
-    description: "Peptide Night Cream + Caffeine Eye Serum + Gua Sha stone for sculpted firm skin.",
-    items: [
-      "Deep Recovery Peptide Night Balm (50g)",
-      "Awakening Caffeine Eye Serum (15ml)",
-      "Rose Quartz Sculpting Gua Sha"
-    ],
-    status: "Active"
-  }
-];
-
 export default function ComboDealsSection() {
-  const [bundles, setBundles] = useState(defaultBundles);
+  const [bundles, setBundles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
@@ -74,17 +21,24 @@ export default function ComboDealsSection() {
       try {
         const res = await api.get("/combos");
         const list = Array.isArray(res.data?.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []);
-        const activeList = list.filter((item) => item.status === "Active" || item.status === "ACTIVE");
-        if (mounted && activeList.length > 0) {
+        const activeList = list.filter((item) => (item.status === "Active" || item.status === "ACTIVE") && item.name && item.bundlePrice);
+        if (mounted) {
           setBundles(activeList);
         }
       } catch (err) {
-        // Fallback to default bundled kits
+        if (mounted) setBundles([]);
+      } finally {
+        if (mounted) setLoading(false);
       }
     };
     loadCombos();
     return () => { mounted = false; };
   }, []);
+
+  // If loading or no active combo deals in database, do not render section
+  if (loading || bundles.length === 0) {
+    return null;
+  }
 
   const handleAddBundle = (bundle) => {
     if (!isAuthenticated) {
@@ -99,7 +53,7 @@ export default function ComboDealsSection() {
         productId: bundle.id || bundle._id,
         name: bundle.name,
         price: Number(bundle.bundlePrice),
-        originalPrice: Number(bundle.originalPrice),
+        originalPrice: Number(bundle.originalPrice || bundle.bundlePrice),
         image: bundle.image,
         quantity: 1,
         isBundle: true
@@ -145,9 +99,13 @@ export default function ComboDealsSection() {
                 <div className={styles.pricingRow}>
                   <div>
                     <span className={styles.bundlePrice}>₹{Number(bundle.bundlePrice).toLocaleString("en-IN")}</span>
-                    <span className={styles.oldPrice}>₹{Number(bundle.originalPrice).toLocaleString("en-IN")}</span>
+                    {bundle.originalPrice && Number(bundle.originalPrice) > Number(bundle.bundlePrice) && (
+                      <span className={styles.oldPrice}>₹{Number(bundle.originalPrice).toLocaleString("en-IN")}</span>
+                    )}
                   </div>
-                  <span className={styles.savePill}>Save ₹{Number(bundle.savings || (bundle.originalPrice - bundle.bundlePrice))}</span>
+                  <span className={styles.savePill}>
+                    Save ₹{Number(bundle.savings || (bundle.originalPrice ? bundle.originalPrice - bundle.bundlePrice : 0))}
+                  </span>
                 </div>
 
                 <button

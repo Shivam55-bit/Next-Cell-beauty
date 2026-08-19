@@ -109,36 +109,9 @@ function HeroSlider() {
     );
   }
 
-  // Empty state — no banners configured in the database
+  // If no banners in database, hide slider cleanly
   if (slides.length === 0) {
-    return (
-      <section
-        className={styles.heroSlider}
-        aria-label="No banners available"
-        style={{ minHeight: 200 }}
-      >
-        <div
-          style={{
-            width: "100%",
-            minHeight: 200,
-            background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 12,
-            color: "rgba(255,255,255,0.5)",
-            fontSize: 15,
-          }}
-        >
-          <span style={{ fontSize: 32 }}>🖼️</span>
-          <span>No banners configured.</span>
-          <Link to="/shop" style={{ color: "#e879a0", fontWeight: 600 }}>
-            Shop all products →
-          </Link>
-        </div>
-      </section>
-    );
+    return null;
   }
 
   return (
