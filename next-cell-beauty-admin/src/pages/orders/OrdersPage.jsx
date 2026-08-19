@@ -148,36 +148,54 @@ export default function OrdersPage() {
             {/* Customer Info */}
             <div className={styles.sectionCard}>
               <h4>Customer Information</h4>
-              <p><strong>Name:</strong> {selectedOrder.customerName}</p>
-              <p><strong>Email:</strong> {selectedOrder.customerEmail}</p>
-              <p><strong>Phone:</strong> {selectedOrder.customerPhone || "N/A"}</p>
-              <p><strong>Shipping Address:</strong> {selectedOrder.shippingAddress}</p>
+              <p><strong>Name:</strong> {selectedOrder.customerName || selectedOrder.customer?.name || selectedOrder.shippingAddress?.fullName || "Guest Customer"}</p>
+              <p><strong>Email:</strong> {selectedOrder.customerEmail || selectedOrder.customer?.email || "N/A"}</p>
+              <p><strong>Phone:</strong> {selectedOrder.customerPhone || selectedOrder.customer?.phone || selectedOrder.shippingAddress?.phone || "N/A"}</p>
+              <div>
+                <strong>Shipping Address:</strong>{" "}
+                {typeof selectedOrder.shippingAddress === "object" && selectedOrder.shippingAddress !== null ? (
+                  <div style={{ marginTop: "6px", padding: "8px 12px", background: "var(--admin-bg, #f8fafc)", borderRadius: "8px", border: "1px solid var(--admin-border, #e2e8f0)", color: "var(--admin-heading, #1e293b)", fontSize: "12px", lineHeight: "1.6" }}>
+                    {selectedOrder.shippingAddress.fullName && <div><strong>{selectedOrder.shippingAddress.fullName}</strong></div>}
+                    <div>{[selectedOrder.shippingAddress.address || selectedOrder.shippingAddress.addressLine1 || selectedOrder.shippingAddress.street, selectedOrder.shippingAddress.addressLine2].filter(Boolean).join(", ")}</div>
+                    {selectedOrder.shippingAddress.landmark && <div>Landmark: {selectedOrder.shippingAddress.landmark}</div>}
+                    <div>{[selectedOrder.shippingAddress.city, selectedOrder.shippingAddress.state, selectedOrder.shippingAddress.postalCode || selectedOrder.shippingAddress.zipCode].filter(Boolean).join(" - ")}</div>
+                    {selectedOrder.shippingAddress.phone && <div>Phone: {selectedOrder.shippingAddress.phone}</div>}
+                  </div>
+                ) : (
+                  <span>{selectedOrder.shippingAddress || "N/A"}</span>
+                )}
+              </div>
             </div>
 
             {/* Ordered Products */}
             <div className={styles.sectionCard}>
               <h4>Ordered Items</h4>
               <div className={styles.itemsList}>
-                {selectedOrder.products?.map((item, idx) => (
-                  <div key={idx} className={styles.itemRow}>
-                    <div>
-                      <strong>{item.name}</strong>
-                      <small>Qty: {item.quantity} x ₹{item.price}</small>
+                {(selectedOrder.products || selectedOrder.items || []).map((item, idx) => {
+                  const itemName = item.name || item.productName || item.product?.name || "Product";
+                  const itemQty = Number(item.quantity || 1);
+                  const itemPrice = Number(item.price || item.salePrice || 0);
+                  return (
+                    <div key={idx} className={styles.itemRow}>
+                      <div>
+                        <strong>{itemName}</strong>
+                        <small>Qty: {itemQty} x ₹{itemPrice.toLocaleString()}</small>
+                      </div>
+                      <strong>₹{(itemQty * itemPrice).toLocaleString()}</strong>
                     </div>
-                    <strong>₹{item.quantity * item.price}</strong>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className={styles.billSummary}>
-                <div><span>Subtotal:</span> ₹{selectedOrder.subtotal}</div>
-                <div><span>Discount ({selectedOrder.couponCode || "None"}):</span> -₹{selectedOrder.discount}</div>
-                <div><span>Tax (GST):</span> +₹{selectedOrder.tax}</div>
-                <div><span>Shipping Charge:</span> +₹{selectedOrder.shippingCharge}</div>
+                <div><span>Subtotal:</span> ₹{Number(selectedOrder.subtotal ?? selectedOrder.totalAmount ?? 0).toLocaleString()}</div>
+                <div><span>Discount ({typeof selectedOrder.couponCode === 'string' ? selectedOrder.couponCode : (selectedOrder.coupon?.code || "None")}):</span> -₹{Number(selectedOrder.discount || 0).toLocaleString()}</div>
+                <div><span>Tax (GST):</span> +₹{Number(selectedOrder.tax || 0).toLocaleString()}</div>
+                <div><span>Shipping Charge:</span> +₹{Number(selectedOrder.shippingCharge || 0).toLocaleString()}</div>
                 <hr />
                 <div className={styles.finalTotal}>
                   <span>Total Amount Paid:</span>
-                  <strong>₹{selectedOrder.totalAmount}</strong>
+                  <strong>₹{Number(selectedOrder.totalAmount ?? selectedOrder.grandTotal ?? 0).toLocaleString()}</strong>
                 </div>
               </div>
             </div>
@@ -186,15 +204,15 @@ export default function OrdersPage() {
             <div className={styles.sectionCard}>
               <h4>Order Timeline</h4>
               <div className={styles.timeline}>
-                {selectedOrder.timeline?.map((step, idx) => (
+                {(selectedOrder.timeline || []).map((step, idx) => (
                   <div key={idx} className={styles.timelineItem}>
                     <div className={styles.timelineIcon}>
                       <CheckCircle2 size={16} />
                     </div>
                     <div>
-                      <strong>{step.status}</strong>
-                      <small>{step.date}</small>
-                      <p>{step.note}</p>
+                      <strong>{typeof step === 'object' ? (step.status || step.title || "Updated") : String(step)}</strong>
+                      <small>{typeof step === 'object' ? (step.date || step.timestamp || "") : ""}</small>
+                      <p>{typeof step === 'object' ? (step.note || step.description || "") : ""}</p>
                     </div>
                   </div>
                 ))}

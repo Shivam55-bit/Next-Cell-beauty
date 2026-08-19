@@ -160,12 +160,17 @@ export default function CustomersPage() {
 
             <div className={styles.sectionCard}>
               <h4>Saved Shipping Addresses</h4>
-              {selectedCustomer.addresses?.map((addr, idx) => (
-                <div key={idx} className={styles.addrBox}>
-                  <MapPin size={14} />
-                  <span>{addr}</span>
-                </div>
-              ))}
+              {selectedCustomer.addresses?.map((addr, idx) => {
+                const addressString = typeof addr === 'object' && addr !== null
+                  ? [addr.fullName, addr.address || addr.addressLine1 || addr.street, addr.landmark ? `Near ${addr.landmark}` : null, addr.city, addr.state, addr.postalCode || addr.zipCode, addr.phone ? `Phone: ${addr.phone}` : null].filter(Boolean).join(', ')
+                  : (addr || "N/A");
+                return (
+                  <div key={idx} className={styles.addrBox}>
+                    <MapPin size={14} />
+                    <span>{addressString}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
