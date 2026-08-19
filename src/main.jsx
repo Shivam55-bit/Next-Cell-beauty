@@ -8,6 +8,12 @@ import App from './App.jsx'
 import './index.css'
 import './styles/global.css'
 
+// Handle Vite dynamic import chunk updates after new deployment
+window.addEventListener('vite:preloadError', (event) => {
+  event.preventDefault()
+  window.location.reload()
+})
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>

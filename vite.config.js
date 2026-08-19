@@ -11,6 +11,10 @@ export default defineConfig({
     tailwind()
   ],
 
+  build: {
+    cssCodeSplit: false,
+  },
+
   server: {
     port: 5175,
     strictPort: false,
