@@ -33,6 +33,8 @@ import policyRoutes from "./routes/policyRoutes.js";
 import settingRoutes from "./routes/settingRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import comboRoutes from "./routes/comboRoutes.js";
+import beforeAfterRoutes from "./routes/beforeAfterRoutes.js";
 
 const app = express();
 
@@ -92,6 +94,8 @@ app.use("/api", policyRoutes);
 app.use("/api", settingRoutes);
 app.use("/api", analyticsRoutes);
 app.use("/api", uploadRoutes);
+app.use("/api", comboRoutes);
+app.use("/api", beforeAfterRoutes);
 
 // Error Handling
 app.use(errorHandler);

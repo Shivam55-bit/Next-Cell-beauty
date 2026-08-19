@@ -1,5 +1,6 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Sparkles, MoveHorizontal } from "lucide-react";
+import api from "../../services/api.js";
 import styles from "./BeforeAfterSlider.module.css";
 
 const defaultComparisons = [
@@ -11,7 +12,8 @@ const defaultComparisons = [
     beforeImage: "https://images.unsplash.com/photo-1512290900672-1f55b9e075fa?auto=format&fit=crop&w=800&q=80",
     afterImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
     beforeLabel: "Before (Dull & Dry)",
-    afterLabel: "After (Radiant Glow)"
+    afterLabel: "After (Radiant Glow)",
+    status: "Active"
   },
   {
     id: 2,
@@ -21,17 +23,37 @@ const defaultComparisons = [
     beforeImage: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=800&q=80",
     afterImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
     beforeLabel: "Bare Skin",
-    afterLabel: "Flawless Finish"
+    afterLabel: "Flawless Finish",
+    status: "Active"
   }
 ];
 
-export default function BeforeAfterSlider({ comparisons = defaultComparisons }) {
+export default function BeforeAfterSlider({ comparisons: initialComparisons }) {
+  const [comparisons, setComparisons] = useState(initialComparisons || defaultComparisons);
   const [activeIndex, setActiveIndex] = useState(0);
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
 
-  const activeData = comparisons[activeIndex] || comparisons[0];
+  useEffect(() => {
+    let mounted = true;
+    const loadBeforeAfter = async () => {
+      try {
+        const res = await api.get("/before-after");
+        const list = Array.isArray(res.data?.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []);
+        const activeList = list.filter((item) => item.status === "Active" || item.status === "ACTIVE");
+        if (mounted && activeList.length > 0) {
+          setComparisons(activeList);
+        }
+      } catch (err) {
+        // Fallback to defaults
+      }
+    };
+    loadBeforeAfter();
+    return () => { mounted = false; };
+  }, []);
+
+  const activeData = comparisons[activeIndex] || comparisons[0] || defaultComparisons[0];
 
   const handleMove = useCallback((clientX) => {
     if (!containerRef.current) return;
@@ -72,7 +94,7 @@ export default function BeforeAfterSlider({ comparisons = defaultComparisons }) 
           <div className={styles.tabButtons}>
             {comparisons.map((item, idx) => (
               <button
-                key={item.id}
+                key={item.id || idx}
                 type="button"
                 className={`${styles.tabBtn} ${activeIndex === idx ? styles.activeTab : ""}`}
                 onClick={() => {
@@ -80,7 +102,7 @@ export default function BeforeAfterSlider({ comparisons = defaultComparisons }) 
                   setSliderPosition(50);
                 }}
               >
-                {item.category}
+                {item.category || item.title}
               </button>
             ))}
           </div>
@@ -102,7 +124,7 @@ export default function BeforeAfterSlider({ comparisons = defaultComparisons }) 
               alt={activeData.afterLabel}
               className={styles.imageLayer}
             />
-            <span className={styles.afterBadge}>{activeData.afterLabel}</span>
+            <span className={styles.afterBadge}>{activeData.afterLabel || "After"}</span>
 
             {/* Before Image (Clipped Layer) */}
             <div
@@ -114,7 +136,7 @@ export default function BeforeAfterSlider({ comparisons = defaultComparisons }) 
                 alt={activeData.beforeLabel}
                 className={styles.imageLayer}
               />
-              <span className={styles.beforeBadge}>{activeData.beforeLabel}</span>
+              <span className={styles.beforeBadge}>{activeData.beforeLabel || "Before"}</span>
             </div>
 
             {/* Slider Handle */}

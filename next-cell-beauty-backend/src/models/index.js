@@ -301,6 +301,38 @@ export const Shade = mongoose.model(
   })
 );
 
+export const ComboDeal = mongoose.model(
+  "ComboDeal",
+  makeSchema({
+    name: { type: String, required: true },
+    badge: { type: String, default: "Save 35%" },
+    tag: { type: String, default: "Bestseller Bundle" },
+    originalPrice: { type: Number, required: true },
+    bundlePrice: { type: Number, required: true },
+    savings: { type: Number, default: 0 },
+    image: { type: String, required: true },
+    description: { type: String, default: "" },
+    items: [{ type: String }],
+    status: { type: String, default: "ACTIVE" },
+    order: { type: Number, default: 0 }
+  })
+);
+
+export const BeforeAfter = mongoose.model(
+  "BeforeAfter",
+  makeSchema({
+    title: { type: String, required: true },
+    category: { type: String, default: "Skincare Transformation" },
+    period: { type: String, default: "After 2 Weeks of Daily Use" },
+    beforeImage: { type: String, required: true },
+    afterImage: { type: String, required: true },
+    beforeLabel: { type: String, default: "Before" },
+    afterLabel: { type: String, default: "After" },
+    status: { type: String, default: "ACTIVE" },
+    order: { type: Number, default: 0 }
+  })
+);
+
 export const SkinQuizQuestion = mongoose.model(
   "SkinQuizQuestion",
   makeSchema({
@@ -768,6 +800,91 @@ export const seedDefaultData = async () => {
         recommendedProducts: [],
         note: "A consistent routine built around cleansing, hydration and SPF is the foundation of healthy skin.",
         status: "ACTIVE"
+      }
+    ]);
+  }
+
+  const comboCount = await ComboDeal.countDocuments();
+  if (comboCount === 0) {
+    await ComboDeal.insertMany([
+      {
+        name: "Complete Radiant Glow Combo",
+        badge: "Save 35%",
+        tag: "Bestseller Bundle",
+        originalPrice: 1998,
+        bundlePrice: 1299,
+        savings: 699,
+        image: "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=800&q=80",
+        description: "HydraGlow Vitamin C Serum + Rosehip Day Cream for maximum glass-skin radiance.",
+        items: [
+          "Vitamin C Illuminating Face Serum (30ml)",
+          "HydraGlow Moisture Day Cream (50g)",
+          "Free Velvet Beauty Pouch"
+        ],
+        status: "ACTIVE",
+        order: 1
+      },
+      {
+        name: "Velvet Matte Lip Trio Box",
+        badge: "Save 40%",
+        tag: "Limited Edition",
+        originalPrice: 2397,
+        bundlePrice: 1449,
+        savings: 948,
+        image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&w=800&q=80",
+        description: "3 iconic shades (Rose Nude, Ruby Red, Berry Plum) in ultra-matte non-drying finish.",
+        items: [
+          "Velvet Liquid Lipstick - Rose Nude",
+          "Velvet Liquid Lipstick - Ruby Red",
+          "Velvet Liquid Lipstick - Berry Plum"
+        ],
+        status: "ACTIVE",
+        order: 2
+      },
+      {
+        name: "Overnight Intensive Repair Kit",
+        badge: "Save 30%",
+        tag: "Dermatologist Recommended",
+        originalPrice: 2899,
+        bundlePrice: 1999,
+        savings: 900,
+        image: "https://images.unsplash.com/photo-1608248597359-28c049615a6b?auto=format&fit=crop&w=800&q=80",
+        description: "Peptide Night Cream + Caffeine Eye Serum + Gua Sha stone for sculpted firm skin.",
+        items: [
+          "Deep Recovery Peptide Night Balm (50g)",
+          "Awakening Caffeine Eye Serum (15ml)",
+          "Rose Quartz Sculpting Gua Sha"
+        ],
+        status: "ACTIVE",
+        order: 3
+      }
+    ]);
+  }
+
+  const baCount = await BeforeAfter.countDocuments();
+  if (baCount === 0) {
+    await BeforeAfter.insertMany([
+      {
+        title: "HydraGlow Skin Serum Results",
+        category: "Skincare Transformation",
+        period: "After 2 Weeks of Daily Use",
+        beforeImage: "https://images.unsplash.com/photo-1512290900672-1f55b9e075fa?auto=format&fit=crop&w=800&q=80",
+        afterImage: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
+        beforeLabel: "Before (Dull & Dry)",
+        afterLabel: "After (Radiant Glow)",
+        status: "ACTIVE",
+        order: 1
+      },
+      {
+        title: "Velvet Matte Poreless Foundation",
+        category: "Makeup Perfection",
+        period: "Instant Application Result",
+        beforeImage: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=800&q=80",
+        afterImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
+        beforeLabel: "Bare Skin",
+        afterLabel: "Flawless Finish",
+        status: "ACTIVE",
+        order: 2
       }
     ]);
   }

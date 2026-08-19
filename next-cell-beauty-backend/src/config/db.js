@@ -24,7 +24,9 @@ import {
   SkinQuizResult,
   ShadeFinderQuestion,
   ShadeFinderResult,
-  Shade
+  Shade,
+  ComboDeal,
+  BeforeAfter
 } from "../models/index.js";
 
 const mongoUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/next-cell-beauty";
@@ -55,7 +57,9 @@ const modelMap = {
   skinQuizResult: SkinQuizResult,
   shadeFinderQuestion: ShadeFinderQuestion,
   shadeFinderResult: ShadeFinderResult,
-  shade: Shade
+  shade: Shade,
+  comboDeal: ComboDeal,
+  beforeAfter: BeforeAfter
 };
 
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

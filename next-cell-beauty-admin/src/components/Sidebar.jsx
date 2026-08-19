@@ -21,6 +21,8 @@ import {
   Tags,
   Users,
   X,
+  Flame,
+  MoveHorizontal,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
@@ -80,6 +82,11 @@ const menuGroups = [
         path: "/coupons",
         icon: Gift,
       },
+      {
+        label: "Combo Deals",
+        path: "/combos",
+        icon: Flame,
+      },
     ],
   },
   {
@@ -104,6 +111,11 @@ const menuGroups = [
         label: "Tutorials",
         path: "/tutorials",
         icon: BookOpen,
+      },
+      {
+        label: "Before & After",
+        path: "/before-after",
+        icon: MoveHorizontal,
       },
       {
         label: "Skin Quiz",

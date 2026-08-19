@@ -19,6 +19,8 @@ import BlogPage from "./pages/blog/BlogPage";
 import FaqPage from "./pages/faq/FaqPage";
 import PoliciesPage from "./pages/policies/PoliciesPage";
 import SettingsPage from "./pages/settings/SettingsPage";
+import ComboDealsPage from "./pages/combos/ComboDealsPage";
+import BeforeAfterPage from "./pages/before-after/BeforeAfterPage";
 
 import AdminLayout from "./layouts/AdminLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -53,6 +55,8 @@ function App() {
           <Route path="shade-finder" element={<ShadeFinderPage />} />
           <Route path="banners" element={<BannersPage />} />
           <Route path="blog" element={<BlogPage />} />
+          <Route path="combos" element={<ComboDealsPage />} />
+          <Route path="before-after" element={<BeforeAfterPage />} />
           <Route path="faq" element={<FaqPage />} />
           <Route path="policies" element={<PoliciesPage />} />
           <Route path="settings" element={<SettingsPage />} />

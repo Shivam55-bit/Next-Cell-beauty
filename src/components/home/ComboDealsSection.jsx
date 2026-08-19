@@ -1,12 +1,14 @@
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingBag, Sparkles, Check, Flame } from "lucide-react";
 import { addToCart } from "../../redux/cartSlice";
 import { useAuth } from "../../context/AuthContext.jsx";
+import api from "../../services/api.js";
 import toast from "react-hot-toast";
 import styles from "./ComboDealsSection.module.css";
 
-const comboBundles = [
+const defaultBundles = [
   {
     id: "bundle-glow-duo",
     name: "Complete Radiant Glow Combo",
@@ -21,7 +23,8 @@ const comboBundles = [
       "Vitamin C Illuminating Face Serum (30ml)",
       "HydraGlow Moisture Day Cream (50g)",
       "Free Velvet Beauty Pouch"
-    ]
+    ],
+    status: "Active"
   },
   {
     id: "bundle-matte-lip-trio",
@@ -37,7 +40,8 @@ const comboBundles = [
       "Velvet Liquid Lipstick - Rose Nude",
       "Velvet Liquid Lipstick - Ruby Red",
       "Velvet Liquid Lipstick - Berry Plum"
-    ]
+    ],
+    status: "Active"
   },
   {
     id: "bundle-night-repair-kit",
@@ -53,14 +57,34 @@ const comboBundles = [
       "Deep Recovery Peptide Night Balm (50g)",
       "Awakening Caffeine Eye Serum (15ml)",
       "Rose Quartz Sculpting Gua Sha"
-    ]
+    ],
+    status: "Active"
   }
 ];
 
 export default function ComboDealsSection() {
+  const [bundles, setBundles] = useState(defaultBundles);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    let mounted = true;
+    const loadCombos = async () => {
+      try {
+        const res = await api.get("/combos");
+        const list = Array.isArray(res.data?.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []);
+        const activeList = list.filter((item) => item.status === "Active" || item.status === "ACTIVE");
+        if (mounted && activeList.length > 0) {
+          setBundles(activeList);
+        }
+      } catch (err) {
+        // Fallback to default bundled kits
+      }
+    };
+    loadCombos();
+    return () => { mounted = false; };
+  }, []);
 
   const handleAddBundle = (bundle) => {
     if (!isAuthenticated) {
@@ -71,11 +95,11 @@ export default function ComboDealsSection() {
 
     dispatch(
       addToCart({
-        id: bundle.id,
-        productId: bundle.id,
+        id: bundle.id || bundle._id,
+        productId: bundle.id || bundle._id,
         name: bundle.name,
-        price: bundle.bundlePrice,
-        originalPrice: bundle.originalPrice,
+        price: Number(bundle.bundlePrice),
+        originalPrice: Number(bundle.originalPrice),
         image: bundle.image,
         quantity: 1,
         isBundle: true
@@ -97,12 +121,12 @@ export default function ComboDealsSection() {
         </div>
 
         <div className={styles.bundleGrid}>
-          {comboBundles.map((bundle) => (
-            <div key={bundle.id} className={styles.bundleCard}>
+          {bundles.map((bundle) => (
+            <div key={bundle.id || bundle._id} className={styles.bundleCard}>
               <div className={styles.imageBox}>
                 <img src={bundle.image} alt={bundle.name} loading="lazy" />
-                <span className={styles.savingsTag}>{bundle.badge}</span>
-                <span className={styles.popularBadge}>{bundle.tag}</span>
+                <span className={styles.savingsTag}>{bundle.badge || "Special Deal"}</span>
+                <span className={styles.popularBadge}>{bundle.tag || "Combo Kit"}</span>
               </div>
 
               <div className={styles.content}>
@@ -110,7 +134,7 @@ export default function ComboDealsSection() {
                 <p className={styles.description}>{bundle.description}</p>
 
                 <div className={styles.itemsList}>
-                  {bundle.items.map((item, idx) => (
+                  {(Array.isArray(bundle.items) ? bundle.items : []).map((item, idx) => (
                     <div key={idx} className={styles.itemRow}>
                       <Check size={14} className={styles.checkIcon} />
                       <span>{item}</span>
@@ -120,10 +144,10 @@ export default function ComboDealsSection() {
 
                 <div className={styles.pricingRow}>
                   <div>
-                    <span className={styles.bundlePrice}>₹{bundle.bundlePrice.toLocaleString("en-IN")}</span>
-                    <span className={styles.oldPrice}>₹{bundle.originalPrice.toLocaleString("en-IN")}</span>
+                    <span className={styles.bundlePrice}>₹{Number(bundle.bundlePrice).toLocaleString("en-IN")}</span>
+                    <span className={styles.oldPrice}>₹{Number(bundle.originalPrice).toLocaleString("en-IN")}</span>
                   </div>
-                  <span className={styles.savePill}>Save ₹{bundle.savings}</span>
+                  <span className={styles.savePill}>Save ₹{Number(bundle.savings || (bundle.originalPrice - bundle.bundlePrice))}</span>
                 </div>
 
                 <button
