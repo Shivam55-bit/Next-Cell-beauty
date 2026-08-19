@@ -77,7 +77,7 @@ function App() {
                 <Route path="/products" element={<ShopPage />} />
                 <Route path="/product/:slug" element={<ProductDetailPage />} />
                 <Route path="/cart" element={<CartPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
                 <Route path="/wishlist" element={<WishlistPage />} />
                 <Route path="/skin-quiz" element={<SkinQuizPage />} />
                 <Route path="/shade-finder" element={<ShadeFinderPage />} />
@@ -88,7 +88,7 @@ function App() {
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
-                <Route path="/my-reviews" element={<MyReviewsPage />} />
+                <Route path="/my-reviews" element={<ProtectedRoute><MyReviewsPage /></ProtectedRoute>} />
                 <Route path="/new-arrivals" element={<NewArrivalsPage />} />
                 <Route path="/track-order" element={<OrderTrackingPage />} />
                 <Route path="/track-order/:orderId" element={<OrderTrackingPage />} />
@@ -96,7 +96,7 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/auth/callback" element={<GoogleAuthCallback />} />
-                <Route path="/orders" element={<OrdersPage />} />
+                <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                 <Route path="/account/orders" element={<ProtectedRoute><MyOrdersPage /></ProtectedRoute>} />
                 <Route path="/account/orders/:orderId" element={<ProtectedRoute><OrderDetailsPage /></ProtectedRoute>} />

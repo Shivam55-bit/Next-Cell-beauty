@@ -36,7 +36,7 @@ const categories = [
 
 function Navbar() {
   const dispatch = useDispatch();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
@@ -155,9 +155,9 @@ function Navbar() {
             </form>
 
             <div className={styles.headerActions}>
-              <Link to={isAuthenticated ? "/profile" : "/login"} className={styles.actionItem}>
+              <Link to={isAuthenticated ? "/profile" : "/login"} className={styles.actionItem} title={isAuthenticated ? "My Account" : "Login"}>
                 <UserRound size={25} />
-                <span>{isAuthenticated ? "Account" : "Account"}</span>
+                <span>{isAuthenticated ? (user?.fullName?.split(" ")[0] || user?.name?.split(" ")[0] || "Account") : "Login"}</span>
               </Link>
 
               <Link to="/wishlist" className={styles.actionItem}>
@@ -295,7 +295,7 @@ function Navbar() {
         <div className={styles.mobileAccountLinks}>
           <Link to={isAuthenticated ? "/profile" : "/login"} onClick={() => setMobileMenuOpen(false)}>
             <UserRound size={20} />
-            {isAuthenticated ? "My Account" : "Login / Register"}
+            {isAuthenticated ? (user?.fullName || user?.name || "My Account") : "Login / Register"}
           </Link>
 
           <Link to="/wishlist" onClick={() => setMobileMenuOpen(false)}>

@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useAuth } from "../context/AuthContext.jsx";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -193,11 +194,24 @@ function getCreatedOrderId(order, response) {
 
 function CheckoutPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const cartState = useSelector((state) => state.cart);
   const cartItems = getCartItems(cartState);
 
   const [form, setForm] = useState(initialForm);
+
+  useEffect(() => {
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        fullName: prev.fullName || user.fullName || user.name || "",
+        email: prev.email || user.email || "",
+        phone: prev.phone || user.phone || "",
+        addressLineOne: prev.addressLineOne || user.address || "",
+      }));
+    }
+  }, [user]);
   const [errors, setErrors] = useState({});
 
   const [selectedPayment, setSelectedPayment] = useState("upi");
